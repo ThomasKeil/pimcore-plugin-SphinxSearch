@@ -1,0 +1,4 @@
+- i18n with search (Object/Document-List, SphinxSearch)
+- DocumentList
+- more configoptions (no head, port, when to run indexer, etc)
+- run indexer manually / from pimcore

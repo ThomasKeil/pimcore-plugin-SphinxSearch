@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<zend-config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
+    <plugin>
+        <pluginName>SphinxSearch</pluginName>
+        <pluginDescription>Creates nice indexes for your objects</pluginDescription>
+        <pluginNiceName>SphinxSearch Plugin</pluginNiceName>
+        <pluginVersion>1.0.0</pluginVersion>
+        <pluginRevision>1</pluginRevision>
+        <pluginBuildTimestamp>1314635984</pluginBuildTimestamp>
+        <pluginIframeSrc></pluginIframeSrc>
+        <pluginClassName>SphinxSearch_Plugin</pluginClassName>
+        <pluginIncludePaths>
+            <path>/SphinxSearch/lib</path>
+            <path>/SphinxSearch/controllers</path>
+            <path>/SphinxSearch/models</path>
+        </pluginIncludePaths>
+        <pluginNamespaces>
+            <namespace>SphinxSearch</namespace>
+        </pluginNamespaces>
+        <pluginJsPaths>
+            <path>/SphinxSearch/static/js/classes/data/checkbox.js</path>
+            <path>/SphinxSearch/static/js/classes/data/date.js</path>
+            <path>/SphinxSearch/static/js/classes/data/datetime.js</path>
+            <path>/SphinxSearch/static/js/classes/data/input.js</path>
+            <path>/SphinxSearch/static/js/classes/data/numeric.js</path>
+            <path>/SphinxSearch/static/js/classes/data/textarea.js</path>
+            <path>/SphinxSearch/static/js/classes/data/time.js</path>
+            <path>/SphinxSearch/static/js/classes/data/wysiwyg.js</path>
+            <path>/SphinxSearch/static/js/classes/data/select.js</path>
+            <path>/SphinxSearch/static/js/classes/class.js</path>
+            <path>/SphinxSearch/static/js/class.js</path>
+            <path>/SphinxSearch/static/js/document/page.js</path>
+            <path>/SphinxSearch/static/js/SphinxSearchPlugin.js</path>
+            <path>/SphinxSearch/static/js/settings.js</path>
+
+            <!-- Compability to DynamicDropdown Plugin :-) -->
+            <path>/SphinxSearch/static/js/classes/data/superboxselect.js</path>
+
+        </pluginJsPaths>
+        <pluginCssPaths>
+            <path>/SphinxSearch/static/css/admin.css</path>
+        </pluginCssPaths>
+    </plugin>
+</zend-config>
