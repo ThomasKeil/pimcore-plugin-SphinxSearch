@@ -14,7 +14,7 @@
 if (!defined("SPHINX_PLUGIN")) define("SPHINX_PLUGIN", PIMCORE_PLUGINS_PATH.DIRECTORY_SEPARATOR."SphinxSearch");
 if (!defined("SPHINX_VAR"))    define("SPHINX_VAR", PIMCORE_WEBSITE_PATH . "/var/plugins/SphinxSearch");
 
-require_once("sphinxapi.php");
+if (!class_exists("SphinxClient")) require_once("sphinxapi.php");
 
 class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore_API_Plugin_Interface {
 
