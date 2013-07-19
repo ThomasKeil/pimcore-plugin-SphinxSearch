@@ -19,3 +19,8 @@
 "indexer period", "Indexer Periode"
 "indexer_period_description","Hier wird die Zeit in Sekunden definiert, die zwischen zwei Indexvorgängen vergehen soll."
 "run_indexer_with_maintenance", "Indexer von Pimcores Maintenance anstossen"
+"Run Indexer", "Indexer starten"
+"Sphinx Indexer ran successfully", "Sphinx Indexer erfolgreich gelaufen."
+"Sphinx Indexer had an error", "Sphinx Indexer hatte einen Fehler."
+"Error running the Sphinx Indexer", "Fehler beim Ausführen des Sphinx Indexer"
+"Save", "Speichern"

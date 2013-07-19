@@ -48,10 +48,16 @@ sphinxsearch.settings = Class.create({
                 layout: "pimcoreform",
                 tbar: [
                     {
-                        text: "Save",
+                        text: t("Save"),
                         handler: this.save.bind(this),
                         iconCls: "pimcore_icon_apply"
+                    },
+                    {
+                        text: t("Run Indexer"),
+                        handler: this.runIndexer.bind(this),
+                        iconCls: "pimcore_icon_start"
                     }
+
                 ],
                 bbar: ["<span>Developed by: <a href='http://www.weblizards.de' target='_blank'>Weblizards - Custom Internet Solutions</a></span>"],
                 items: [
@@ -197,6 +203,29 @@ sphinxsearch.settings = Class.create({
                     }
                 } catch(e) {
                     pimcore.helpers.showNotification(t("error"), t("sphinx settings save error"), "error");
+                }
+            }
+        });
+    },
+
+    runIndexer: function () {
+
+        Ext.Ajax.request({
+            url: "/plugin/SphinxSearch/admin/runindexer",
+            method: "post",
+            params: {
+
+            },
+            success: function (response) {
+                try {
+                    var res = Ext.decode(response.responseText);
+                    if (res.success) {
+                        pimcore.helpers.showNotification(t("success"), t("Sphinx Indexer ran successfully"), "success");
+                    } else {
+                        pimcore.helpers.showNotification(t("error"), t("Sphinx Indexer had an error"), "error", t(res.message));
+                    }
+                } catch(e) {
+                    pimcore.helpers.showNotification(t("error"), t("Error running the Sphinx Indexer"), "error");
                 }
             }
         });

@@ -121,7 +121,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     $output = array();
     $return_var = 0;
 
-    exec("$indexer --all --rotate --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf", $output, $return_var);
+    exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf --all --rotate ", $output, $return_var);
 
     if ($return_var == 0) {
       $config->indexer->lastrun = time();
