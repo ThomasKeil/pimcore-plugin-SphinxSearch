@@ -72,6 +72,13 @@ sphinxsearch.settings = Class.create({
                         defaults: {width: 150},
                         items :[
                             {
+                                xtype: "displayfield",
+                                hideLabel: true,
+                                width: 600,
+                                value: t('indexer_path_explanation'),
+                                cls: "pimcore_extra_label_bottom"
+                            },
+                            {
                                 fieldLabel: t("path to pid file"),
                                 xtype: "textfield",
                                 name: "sphinxsearch.path_pid",

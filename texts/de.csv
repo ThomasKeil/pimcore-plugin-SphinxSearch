@@ -24,3 +24,4 @@
 "Sphinx Indexer had an error", "Sphinx Indexer hatte einen Fehler."
 "Error running the Sphinx Indexer", "Fehler beim Ausführen des Sphinx Indexer"
 "Save", "Speichern"
+"indexer_path_explanation","Bei Angabe von relativen Pfaden wird automatisch PIMCORE_DOCUMENT_ROOT als Basispfad verwendet."

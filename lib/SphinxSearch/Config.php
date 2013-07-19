@@ -111,9 +111,14 @@ class SphinxSearch_Config {
     $db_port = $params->port;
     $index_path = SPHINX_VAR.DIRECTORY_SEPARATOR."index";
     $cli_path = PIMCORE_PLUGINS_PATH.DIRECTORY_SEPARATOR."SphinxSearch".DIRECTORY_SEPARATOR."cli";
+
     $pid_path  = $this->config->path->pid;
     $logfile_path = $this->config->path->log;
     $querylog_path = $this->config->path->querylog;
+
+    if (substr($pid_path,0,1) != DIRECTORY_SEPARATOR) $pid_path = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$pid_path;
+    if (substr($logfile_path,0,1) != DIRECTORY_SEPARATOR) $logfile_path = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$logfile_path;
+    if (substr($querylog_path,0,1) != DIRECTORY_SEPARATOR) $querylog_path = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$querylog_path;
 
 $config = <<<EOL
 

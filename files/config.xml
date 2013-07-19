@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <zend-config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
     <path>
-        <pid>/var/run/searchd.pid</pid>
-        <log>/var/log/sphinxsearch/searchd.log</log>
-        <querylog>/var/log/sphinxsearch/query.log</querylog>
+        <pid>website/var/system/searchd.pid</pid>
+        <log>website/var/log/sphinxsearch_searchd.log</log>
+        <querylog>website/var/log/sphinxsearch_query.log</querylog>
         <indexer>/usr/bin/indexer</indexer>
     </path>
     <indexer>
