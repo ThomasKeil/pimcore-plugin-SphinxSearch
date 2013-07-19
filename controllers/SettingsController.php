@@ -48,6 +48,8 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
       ));
       $writer->write();
 
+      $sphinx_config = new SphinxSearch_Config();
+      $sphinx_config->writeSphinxConfig();
 
       $this->_helper->json(array("success" => true));
     } catch (Exception $e) {
