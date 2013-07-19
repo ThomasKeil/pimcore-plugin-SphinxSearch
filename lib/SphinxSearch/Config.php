@@ -256,6 +256,7 @@ source $class_name
 
         sql_query               = SELECT $fields FROM $table
         sql_query_info          = SELECT oo_id FROM $table WHERE oo_id=\$id
+$attributes_definition
 }
 
 index idx_$class_name
