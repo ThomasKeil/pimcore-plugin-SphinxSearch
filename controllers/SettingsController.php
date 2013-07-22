@@ -21,7 +21,8 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
       "querylog" => $config->path->querylog,
       "indexer" => $config->path->indexer,
       "indexer_maintenance" => $config->indexer->runwithmaintenance,
-      "indexer_period" => $config->indexer->period
+      "indexer_period" => $config->indexer->period,
+      "searchd_port" => $config->searchd->port > 0 ? $config->searchd->port : 9312
     );
 		
 		$this->_helper->json($settings);
@@ -41,6 +42,7 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
       $config->indexer->period = $values["sphinxsearch.indexer_period"];
       $config->indexer->runwithmaintenance = $values["sphinxsearch.indexer_maintenance"];
       $config->documents->use_i18n = $values["sphinxsearch.documents_i18n"] == "true" ? "true" : "false";
+      $config->searchd->port = $values["sphinxsearch.searchd_port"];
 
       $writer = new Zend_Config_Writer_Xml(array(
         "config" => $config,

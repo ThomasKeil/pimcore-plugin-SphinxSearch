@@ -11,19 +11,12 @@ pimcore.plugin.sphinxsearch = Class.create(pimcore.plugin.admin, {
         pimcore.plugin.broker.registerPlugin(this);
     },
 
-
-    uninstall: function() {
-    
-    },
-
-    pimcoreReady: function (params,broker){
-
-
+    pimcoreReady: function (viewport) {
         var user = pimcore.globalmanager.get("user");
         if(user.admin == true){
 
-            var toolbar = Ext.getCmp("pimcore_panel_toolbar");
-
+//            var toolbar = Ext.getCmp("pimcore_panel_toolbar");
+            var toolbar = pimcore.globalmanager.get("layout_toolbar");
             var action = new Ext.Action({
                 id:"sphinxsearch_setting_button",
                 text: t('Sphinxsearch settings'),
@@ -32,13 +25,14 @@ pimcore.plugin.sphinxsearch = Class.create(pimcore.plugin.admin, {
                     var gestion = new sphinxsearch.settings;
                 }
             });
-
-            toolbar.items.items[2].menu.add(action);
+            toolbar.settingsMenu.addItem(action);
         }
     }
 
 
 
 });
+(function() {
+    new pimcore.plugin.sphinxsearch();
+})();
 
-new pimcore.plugin.sphinxsearch();

@@ -6,6 +6,9 @@
         <querylog>website/var/log/sphinxsearch_query.log</querylog>
         <indexer>/usr/bin/indexer</indexer>
     </path>
+    <searchd>
+        <port>9312</port>
+    </searchd>
     <indexer>
         <period>3600</period>
         <lastrun>0</lastrun>

@@ -25,3 +25,4 @@
 "Error running the Sphinx Indexer", "Error running the Sphinx Indexer"
 "Save", "Save"
 "indexer_path_explanation","By specifying a realtive path PIMCORE_DOCUMENT_ROOT will automatically be used as base path."
+"searchd port", "Port"

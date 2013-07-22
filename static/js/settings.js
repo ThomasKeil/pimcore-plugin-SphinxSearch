@@ -72,11 +72,11 @@ sphinxsearch.settings = Class.create({
                         defaults: {width: 150},
                         items :[
                             {
-                                xtype: "displayfield",
-                                hideLabel: true,
-                                width: 600,
-                                value: t('indexer_path_explanation'),
-                                cls: "pimcore_extra_label_bottom"
+                                fieldLabel: t("searchd port"),
+                                xtype: "textfield",
+                                name: "sphinxsearch.searchd_port",
+                                value: this.data.searchd_port,
+                                width: 50
                             },
                             {
                                 fieldLabel: t("path to pid file"),
@@ -98,7 +98,14 @@ sphinxsearch.settings = Class.create({
                                 name: "sphinxsearch.path_querylog",
                                 value: this.data.querylog,
                                 width: 350
-                            }
+                            },
+                            {
+                                xtype: "displayfield",
+                                hideLabel: true,
+                                width: 600,
+                                value: t('indexer_path_explanation'),
+                                cls: "pimcore_extra_label_bottom"
+                            },
 
                         ]
                     },
@@ -176,7 +183,7 @@ sphinxsearch.settings = Class.create({
     },
     save: function () {
         var values = this.layout.getForm().getFieldValues();
-        console.log(values);
+        //console.log(values);
 
         // check for mandatory fields
         if(empty(values["sphinxsearch.path_pid"])) {

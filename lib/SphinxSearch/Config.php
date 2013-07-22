@@ -115,6 +115,7 @@ class SphinxSearch_Config {
     $pid_path  = $this->config->path->pid;
     $logfile_path = $this->config->path->log;
     $querylog_path = $this->config->path->querylog;
+    $port = $this->config->searchd->port;
 
     if (substr($pid_path,0,1) != DIRECTORY_SEPARATOR) $pid_path = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$pid_path;
     if (substr($logfile_path,0,1) != DIRECTORY_SEPARATOR) $logfile_path = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$logfile_path;
@@ -129,7 +130,7 @@ mem_limit = 32M
 
 searchd
 {
-port = 9312
+port = $port
 log = $logfile_path
 query_log = $querylog_path
 read_timeout = 5
