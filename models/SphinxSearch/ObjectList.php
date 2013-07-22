@@ -23,10 +23,15 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
   }
 
   protected function load() {
-    $locale = Zend_Registry::get("Zend_Locale");
-    $language = $locale->getLanguage();
+    $index = "idx_".strtolower($this->class_name);
 
-    $index = "idx_".strtolower($this->class_name)."_".$language;
+    $object_class = Object_Class::getByName($this->class_name);
+    if($object_class->getFieldDefinition("localizedfields")) {
+      $locale = Zend_Registry::get("Zend_Locale");
+      $language = $locale->getLanguage();
+      $index .= "_".$language;
+    }
+
     $search_result = $this->SphinxClient->Query($this->query, $index);
     if ($search_result === false ) {
       throw new Exception($this->SphinxClient->GetLastError()."\n query:".$this->query);
