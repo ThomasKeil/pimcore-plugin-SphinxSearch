@@ -12,48 +12,50 @@
 class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
   public function current() {
-    if ($this->search_result_segmented === false) {
-      $this->search_result_segmented = $this->load();
-    }
-
+    $this->load();
     $id = $this->result_ids[$this->pointer];
     $objectString = "Object_".ucfirst($this->class_name);
     $object = $objectString::getById($id);
     return $object;
   }
 
-  protected function load() {
-    $index = "idx_".strtolower($this->class_name);
-
-    $object_class = Object_Class::getByName($this->class_name);
-    if($object_class->getFieldDefinition("localizedfields")) {
-      $locale = Zend_Registry::get("Zend_Locale");
-      $language = $locale->getLanguage();
-      $index .= "_".$language;
+  public function load($override = false) {
+    if ($this->search_result_items !== null && !$override) {
+      return $this->search_result_items;
     }
-
-    $search_result = $this->SphinxClient->Query($this->query, $index);
-    if ($search_result === false ) {
-      throw new Exception($this->SphinxClient->GetLastError()."\n query:".$this->query);
-    }
-
-    return $search_result["matches"];
-  }
-
-  public function getObjects() {
-
-    if ($this->search_result_segmented === false) {
-      $this->search_result_segmented = $this->load();
-    }
+    $search_result = $this->getObjectIDs();
+    $sliced = array_slice($search_result, $this->offset, $this->limit, true);
 
     $objectString = "Object_".ucfirst($this->class_name);
-
     $entries = array();
-    foreach ($this->search_result_segmented as $id => $meta) {
+    foreach ($sliced as $id => $meta) {
       $entries[] = $objectString::getById($id);
     }
-    return $entries;
-
+    return $this->search_result_items = $entries;
   }
+
+  public function getTotalCount() {
+    return count($this->getObjectIds());
+  }
+
+  private function getObjectIds() {
+    if ($this->search_result_ids === null) {
+      $index = "idx_".strtolower($this->class_name);
+      $object_class = Object_Class::getByName($this->class_name);
+      if($object_class->getFieldDefinition("localizedfields")) {
+        $locale = Zend_Registry::get("Zend_Locale");
+        $language = $locale->getLanguage();
+        $index .= "_".$language;
+      }
+
+      $search_result = $this->SphinxClient->Query($this->query, $index);
+      if ($search_result === false ) {
+        throw new Exception($this->SphinxClient->GetLastError()."\n query:".$this->query);
+      }
+      $this->search_result_ids = $search_result["matches"];
+    }
+    return $this->search_result_ids;
+  }
+
 
 }

@@ -25,29 +25,28 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
   protected $pointer = 0;
 
-  protected $result_ids = false;
-
   protected $plugin_config;
 
   /**
    * @var bool|array
    */
-  protected $search_result_segmented = false;
+  protected $search_result_ids = null;
 
   /**
    * @var bool|array
    */
-  protected $search_result_total = false;
+  protected $search_result_items = null;
 
 
   public function __construct($class_name, $query = null) {
     $this->setQuery($query);
 
     $sphinx_config = SphinxSearch_Config::getInstance();
-    $config = $sphinx_config->getConfig();
-    $this->plugin_config = $config;
+    $class_config = $sphinx_config->getClassesAsArray(); // The configuration
 
-    $max_results = intval($config->maxresults);
+    $this->plugin_config = $sphinx_config->getConfig();
+
+    $max_results = intval($this->plugin_config->maxresults);
     $this->limit = $max_results;
 
     $SphinxClient = new SphinxClient();
@@ -55,9 +54,12 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
     $SphinxClient->SetMatchMode(SPH_MATCH_EXTENDED2);
     $SphinxClient->SetSortMode(SPH_SORT_EXTENDED, "@weight DESC");
-    $SphinxClient->setLimits($this->offset, $this->limit);
 
-    $class_config = $sphinx_config->getClassesAsArray(); // The configuration
+    // Sphinx Client is to always return everything - it's just IDs
+    // Paginator is then to cast the necessary Items, this can be done
+    // with offset/limit
+    $SphinxClient->setLimits(0, $max_results);
+
     $field_weights = array();
     foreach ($class_config[strtolower($class_name)] as $field_name => $field_config) {
       if (array_key_exists("weight", $field_config)) {
@@ -74,8 +76,6 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
   }
 
   protected abstract function load();
-
-  public abstract function getObjects();
 
   /**
    * @param  $order
@@ -113,12 +113,10 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
   public function setOffset($offset) {
     $this->offset = $offset;
-    $this->SphinxClient->setLimits($this->offset, $this->limit);
   }
 
   public function setLimit($limit) {
     $this->limit = $limit;
-    $this->SphinxClient->setLimits($this->offset, $this->limit);
   }
 
   /**
@@ -129,10 +127,12 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
    * @return array
    */
   public function getItems($offset, $itemCountPerPage) {
-    $this->setOffset($offset);
     $this->setLimit($itemCountPerPage);
-    return $this->getObjects();
+    $this->setOffset($offset);
+    $this->load(true);
+    return $this->search_result_items;
   }
+
 
   /**
    * (PHP 5 &gt;= 5.1.0)<br/>
@@ -144,11 +144,11 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
    * The return value is cast to an integer.
    */
   public function count() {
-    if ($this->search_result_total === false) {
-      $this->search_result_total = $this->load();
-    }
-    return count($this->search_result_total);
+    return $this->getTotalCount();
+
   }
+
+  public abstract function getTotalCount();
 
   /**
    * Return a fully configured Paginator Adapter from this method.
@@ -195,10 +195,8 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
    * Returns true on success or false on failure.
    */
   public function valid() {
-    if ($this->search_result_segmented === false) {
-      $this->search_result_segmented = $this->load();
-    }
-    return array_key_exists($this->pointer, $this->result_ids);
+    $this->load();
+    return array_key_exists($this->pointer, $this->search_result_items);
   }
 
   /**
