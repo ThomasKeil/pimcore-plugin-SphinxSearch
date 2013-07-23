@@ -27,6 +27,8 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
   protected $result_ids = false;
 
+  protected $plugin_config;
+
   /**
    * @var bool|array
    */
@@ -43,6 +45,7 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
     $sphinx_config = SphinxSearch_Config::getInstance();
     $config = $sphinx_config->getConfig();
+    $this->plugin_config = $config;
 
     $max_results = intval($config->maxresults);
     $this->limit = $max_results;
