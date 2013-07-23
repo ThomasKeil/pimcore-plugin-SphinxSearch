@@ -62,7 +62,7 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
     $SphinxClient->setLimits(0, $max_results, $max_results);
 
     $field_weights = array();
-    foreach ($class_config[strtolower($class_name)] as $field_name => $field_config) {
+    foreach ($class_config[ucfirst($class_name)] as $field_name => $field_config) {
       if (array_key_exists("weight", $field_config)) {
         $field_weights[$field_name] = $field_config["weight"];
       }

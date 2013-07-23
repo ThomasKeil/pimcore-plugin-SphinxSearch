@@ -13,7 +13,7 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
   public function current() {
     $this->load();
-    $id = $this->result_ids[$this->pointer];
+    $id = $this->search_result_ids[$this->pointer];
     $objectString = "Object_".ucfirst($this->class_name);
     $object = $objectString::getById($id);
     return $object;
@@ -40,7 +40,7 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
   private function getObjectIds() {
     if ($this->search_result_ids === null) {
-      $index = "idx_".strtolower($this->class_name);
+      $index = "idx_".ucfirst($this->class_name);
       $object_class = Object_Class::getByName($this->class_name);
       if($object_class->getFieldDefinition("localizedfields")) {
         $locale = Zend_Registry::get("Zend_Locale");
@@ -52,7 +52,12 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
       if ($search_result === false ) {
         throw new Exception($this->SphinxClient->GetLastError()."\n query:".$this->query);
       }
-      $this->search_result_ids = $search_result["matches"];
+
+      if ($search_result["total_found"] > 0) {
+        $this->search_result_ids = array_keys($search_result["matches"]);
+      } else {
+        $this->search_result_ids = array();
+      }
     }
     return $this->search_result_ids;
   }
