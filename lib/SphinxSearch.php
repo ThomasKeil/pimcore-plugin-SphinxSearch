@@ -45,6 +45,7 @@ class SphinxSearch {
     $SphinxClient = new SphinxClient();
 
     $SphinxClient->SetMatchMode(SPH_MATCH_EXTENDED2);
+    $SphinxClient->setServer("localhost", $this->config->searchd->port);
 
     if (array_key_exists("language", $params)) {
       $language = $params["language"];

@@ -54,11 +54,12 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
     $SphinxClient->SetMatchMode(SPH_MATCH_EXTENDED2);
     $SphinxClient->SetSortMode(SPH_SORT_EXTENDED, "@weight DESC");
+    $SphinxClient->setServer("localhost", $this->plugin_config->searchd->port);
 
     // Sphinx Client is to always return everything - it's just IDs
     // Paginator is then to cast the necessary Items, this can be done
     // with offset/limit
-    $SphinxClient->setLimits(0, $max_results);
+    $SphinxClient->setLimits(0, $max_results, $max_results);
 
     $field_weights = array();
     foreach ($class_config[strtolower($class_name)] as $field_name => $field_config) {
