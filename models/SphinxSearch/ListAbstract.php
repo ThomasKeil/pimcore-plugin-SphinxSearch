@@ -140,6 +140,16 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
     return $this;
   }
 
+  public function setSelect($value) {
+    $this->SphinxClient->SetSelect($value);
+    return $this;
+  }
+
+  public function setFilter($filter, $parameter) {
+    $this->SphinxClient->SetFilter($filter,$parameter);
+    return $this;
+  }
+
   /**
    * Returns a collection of items for a page.
    *
