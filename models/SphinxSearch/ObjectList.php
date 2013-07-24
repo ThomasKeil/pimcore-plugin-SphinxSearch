@@ -31,7 +31,8 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
     foreach ($sliced as $id => $meta) {
       $entries[] = $objectString::getById($id);
     }
-    return $this->search_result_items = $entries;
+    $this->search_result_items = $entries;
+    return $this->search_result_items;
   }
 
   public function getTotalCount() {
