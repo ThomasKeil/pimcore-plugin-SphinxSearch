@@ -11,6 +11,24 @@
 
 class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
+  protected $class_name;
+
+  public function __construct($query, $classname) {
+    parent::__construct($query);
+    $sphinx_config = SphinxSearch_Config::getInstance();
+    $class_config = $sphinx_config->getClassesAsArray(); // The configuration
+
+    $this->class_name = $classname;
+    $field_weights = array();
+    foreach ($class_config[ucfirst($this->class_name)] as $field_name => $field_config) {
+      if (array_key_exists("weight", $field_config)) {
+        $field_weights[$field_name] = $field_config["weight"];
+      }
+    }
+    if (sizeof($field_weights) > 0) $this->SphinxClient->setFieldWeights($field_weights);
+
+  }
+
   public function current() {
     $this->load();
     $id = $this->search_result_ids[$this->pointer];
@@ -67,6 +85,4 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
     }
     return $this->search_result_ids;
   }
-
-
 }

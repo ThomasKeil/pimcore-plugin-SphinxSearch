@@ -22,8 +22,6 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
    */
   protected $SphinxClient;
 
-  protected $class_name;
-
   protected $query = "";
 
   protected $pointer = 0;
@@ -46,11 +44,10 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
   public $unpublished = false;
 
 
-  public function __construct($class_name, $query = null) {
+  public function __construct($query) {
     $this->query = $query;
 
     $sphinx_config = SphinxSearch_Config::getInstance();
-    $class_config = $sphinx_config->getClassesAsArray(); // The configuration
 
     $this->plugin_config = $sphinx_config->getConfig();
 
@@ -69,15 +66,6 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
     // with offset/limit
     $SphinxClient->setLimits(0, $max_results, $max_results);
 
-    $field_weights = array();
-    foreach ($class_config[ucfirst($class_name)] as $field_name => $field_config) {
-      if (array_key_exists("weight", $field_config)) {
-        $field_weights[$field_name] = $field_config["weight"];
-      }
-    }
-    if (sizeof($field_weights) > 0) $SphinxClient->setFieldWeights($field_weights);
-
-    $this->class_name = $class_name;
   }
 
   protected abstract function load();

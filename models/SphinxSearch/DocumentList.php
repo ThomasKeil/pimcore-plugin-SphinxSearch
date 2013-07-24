@@ -9,95 +9,88 @@
 
 // http://framework.zend.com/manual/1.12/de/zend.paginator.advanced.html#zend.paginator.advanced.adapters
 
-class SphinxSearch_DocumentList implements Zend_Paginator_Adapter_Interface, Zend_Paginator_AdapterAggregate, Iterator {
+class SphinxSearch_DocumentList extends SphinxSearch_ListAbstract {
+
+  public function __construct($query) {
+    parent::__construct($query);
+
+    $sphinx_config = SphinxSearch_Config::getInstance();
+    $documents_config = $sphinx_config->getDocumentsAsArray();
 
 
-  public function __construct() {
+    $field_weights = array();
+    foreach ($documents_config as $document_name => $document_properties) {
+      foreach ($document_properties["elements"] as $field_name => $field_config) {
+        if (array_key_exists("weight", $field_config) && intval($field_config["weight"]) > 0) {
+          $field_weights[$field_name] = intval($field_config["weight"]);
+        }
+      }
+    }
+    if (sizeof($field_weights) > 0) $this->SphinxClient->setFieldWeights($field_weights);
+
 
   }
 
-  /**
-   * Returns an collection of items for a page.
-   *
-   * @param  integer $offset Page offset
-   * @param  integer $itemCountPerPage Number of items per page
-   * @return array
-   */
-  public function getItems($offset, $itemCountPerPage) {
-
-  }
-
-  /**
-   * (PHP 5 &gt;= 5.1.0)<br/>
-   * Count elements of an object
-   * @link http://php.net/manual/en/countable.count.php
-   * @return int The custom count as an integer.
-   * </p>
-   * <p>
-   * The return value is cast to an integer.
-   */
-  public function count() {
-
-  }
-
-  /**
-   * Return a fully configured Paginator Adapter from this method.
-   *
-   * @return Zend_Paginator_Adapter_Interface
-   */
-  public function getPaginatorAdapter() {
-
-  }
-
-  /**
-   * (PHP 5 &gt;= 5.0.0)<br/>
-   * Return the current element
-   * @link http://php.net/manual/en/iterator.current.php
-   * @return mixed Can return any type.
-   */
   public function current() {
+    $this->load();
+    $id = $this->search_result_ids[$this->pointer];
+    return Document::getById($id);
+  }
+
+  public function load($override = false) {
+    if ($this->search_result_items !== null && !$override) {
+      return $this->search_result_items;
+    }
+
+    $search_result = $this->getDocumentIds();
+    $sliced = array_slice($search_result, $this->offset, $this->limit, true);
+
+    $documents = array();
+    foreach ($sliced as $id => $meta) {
+      $documents[] = Document::getById($id);
+    }
+
+    $this->search_result_items = $documents;
+    return $this->search_result_items;
 
   }
 
-  /**
-   * (PHP 5 &gt;= 5.0.0)<br/>
-   * Move forward to next element
-   * @link http://php.net/manual/en/iterator.next.php
-   * @return void Any returned value is ignored.
-   */
-  public function next() {
-
+  public function getTotalCount() {
+    return count($this->getDocumentIds());
   }
 
-  /**
-   * (PHP 5 &gt;= 5.0.0)<br/>
-   * Return the key of the current element
-   * @link http://php.net/manual/en/iterator.key.php
-   * @return mixed scalar on success, or null on failure.
-   */
-  public function key() {
+  private function getDocumentIds() {
+    if ($this->search_result_ids === null) {
+      $sphinx_config = SphinxSearch_Config::getInstance();
+      $documents_config = $sphinx_config->getDocumentsAsArray();
 
+      $query = $this->query;
+      if (!$this->getUnpublished()) {
+        $query = $query." @o_published 1";
+      }
+
+      $language = "all";
+      if ($this->plugin_config->documents->use_i18n == "true") {
+        $locale = Zend_Registry::get("Zend_Locale");
+        $language = $locale->getLanguage();
+      }
+      foreach ($documents_config as $document_name => $document_properties) {
+        $indexes[] = "idx_document_".$document_name."_".$language;
+      }
+
+      $search_result = $this->SphinxClient->Query($query, implode(", ", $indexes));
+      if ($search_result === false ) {
+        throw new Exception($this->SphinxClient->GetLastError());
+      }
+
+      if ($search_result["total_found"] > 0) {
+        $this->search_result_ids = array_keys($search_result["matches"]);
+      } else {
+        $this->search_result_ids = array();
+      }
+    }
+    return $this->search_result_ids;
   }
 
-  /**
-   * (PHP 5 &gt;= 5.0.0)<br/>
-   * Checks if current position is valid
-   * @link http://php.net/manual/en/iterator.valid.php
-   * @return boolean The return value will be casted to boolean and then evaluated.
-   * Returns true on success or false on failure.
-   */
-  public function valid() {
-
-  }
-
-  /**
-   * (PHP 5 &gt;= 5.0.0)<br/>
-   * Rewind the Iterator to the first element
-   * @link http://php.net/manual/en/iterator.rewind.php
-   * @return void Any returned value is ignored.
-   */
-  public function rewind() {
-    
-  }
 
 }
