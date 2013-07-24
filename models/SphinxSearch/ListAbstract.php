@@ -17,6 +17,9 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
   protected $order_key = "oo_id";
   protected $order = "ASC";
 
+  /**
+   * @var SphinxClient
+   */
   protected $SphinxClient;
 
   protected $class_name;
@@ -81,7 +84,7 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
   /**
    * @param  $order
-   * @return void
+   * @return SphinxSearch_ListAbstract
    */
   public function setOrder($order) {
     $order = strtoupper($order);
@@ -100,7 +103,7 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
   /**
    * @param string $order_key
-   * @return void
+   * @return SphinxSearch_ListAbstract
    */
   public function setOrderKey($order_key) {
     $this->order_key = $order_key;
@@ -115,6 +118,10 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
     return $this->order_key;
   }
 
+  /**
+   * @param $offset
+   * @return SphinxSearch_ListAbstract
+   */
   public function setOffset($offset) {
     $this->offset = $offset;
     return $this;
@@ -133,20 +140,42 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
   }
 
   /**
-   * @return bool
+   * @return SphinxSearch_ListAbstract
    */
   public function setUnpublished($unpublished) {
     $this->unpublished = (bool) $unpublished;
     return $this;
   }
 
-  public function setSelect($value) {
-    $this->SphinxClient->SetSelect($value);
+  /**
+   * Sets the select clause, listing specific attributes to fetch, and expressions to compute and fetch.
+   *
+   * @param $clause SQL-like clause.
+   * @return SphinxSearch_ListAbstract
+   * @throws Exception
+   */
+  public function setSelect($clause) {
+    $result = $this->SphinxClient->SetSelect($clause);
+    if ($result === false) {
+      throw new Exception("Error on setting select \"".$clause."\":\n".$this->SphinxClient->GetLastError());
+    }
     return $this;
   }
 
-  public function setFilter($filter, $parameter) {
-    $this->SphinxClient->SetFilter($filter,$parameter);
+  /**
+   * Adds new integer values set filter to the existing list of filters.
+   *
+   * @param $attribute An attribute name.
+   * @param $values Plain array of integer values.
+   * @param bool $exclude If set to TRUE, matching items are excluded from the result set.
+   * @return SphinxSearch_ListAbstract
+   * @throws Exception on failure
+   */
+  public function setFilter($attribute, $values, $exclude = false) {
+    $result = $this->SphinxClient->SetFilter($attribute, $values, $exclude);
+    if ($result === false) {
+      throw new Exception("Error on setting filter \"".$attribute."\":\n".$this->SphinxClient->GetLastError());
+    }
     return $this;
   }
 
