@@ -111,7 +111,7 @@ class SphinxSearch_ClassController extends Pimcore_Controller_Action_Admin {
               case "input":
               case "textarea":
               case "wysiwyg":
-                $node->addAttribute("field_type", "sql_attr_string");
+                $node->addAttribute("field_type", "sql_field_string");
                 break;
               case "date":
               case "datetime":
