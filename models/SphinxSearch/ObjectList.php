@@ -48,7 +48,12 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
         $index .= "_".$language;
       }
 
-      $search_result = $this->SphinxClient->Query($this->query, $index);
+      $query = $this->query;
+      if (!$this->getUnpublished()) {
+        $query = $query." @o_published 1";
+      }
+
+      $search_result = $this->SphinxClient->Query($query, $index);
       if ($search_result === false ) {
         throw new Exception($this->SphinxClient->GetLastError()."\n query:".$this->query);
       }

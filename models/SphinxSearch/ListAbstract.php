@@ -37,9 +37,14 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
    */
   protected $search_result_items = null;
 
+  /**
+   * @var boolean
+   */
+  public $unpublished = false;
+
 
   public function __construct($class_name, $query = null) {
-    $this->setQuery($query);
+    $this->query = $query;
 
     $sphinx_config = SphinxSearch_Config::getInstance();
     $class_config = $sphinx_config->getClassesAsArray(); // The configuration
@@ -72,10 +77,6 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
     $this->class_name = $class_name;
   }
 
-  public function setQuery($query) {
-    $this->query = $query;
-  }
-
   protected abstract function load();
 
   /**
@@ -87,6 +88,7 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
     if ($order != "ASC") $order = "DESC";
     $this->order = $order;
     $this->SphinxClient->SetSortMode(SPH_SORT_EXTENDED, $this->order_key." ".$this->order);
+    return $this;
   }
 
   /**
@@ -103,6 +105,7 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
   public function setOrderKey($order_key) {
     $this->order_key = $order_key;
     $this->SphinxClient->SetSortMode(SPH_SORT_EXTENDED, $this->order_key." ".$this->order);
+    return $this;
   }
 
   /**
@@ -114,10 +117,27 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
   public function setOffset($offset) {
     $this->offset = $offset;
+    return $this;
   }
 
   public function setLimit($limit) {
     $this->limit = $limit;
+    return $this;
+  }
+
+  /**
+   * @return bool
+   */
+  public function getUnpublished() {
+    return $this->unpublished;
+  }
+
+  /**
+   * @return bool
+   */
+  public function setUnpublished($unpublished) {
+    $this->unpublished = (bool) $unpublished;
+    return $this;
   }
 
   /**
