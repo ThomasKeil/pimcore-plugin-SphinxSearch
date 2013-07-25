@@ -77,6 +77,7 @@ foreach ($document_results as $document_result) {
     $document = Document_Page::getById($document_result["id"]);
     if ($opts->language != "all" && $document->getProperty("language") != $opts->language ) continue;
     print "\n  <sphinx:document id=\"".$document->getId()."\">\n";
+    print "<o_published>".($document->getPublished() ? "1" : "0")."</o_published>\n";
     foreach ($document_config["elements"] as $element_name => $element_config) {
       $element = $document->getElement($element_name);
       if (is_null($element)) {
