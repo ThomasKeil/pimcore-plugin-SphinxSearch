@@ -72,7 +72,7 @@ class SphinxSearch_ClassController extends Pimcore_Controller_Action_Admin {
     $class = Object_Class::getById(intval($this->getParam("id")));
 
     $class_config = Zend_Json::decode($this->getParam("configuration"));
-    $class_name = $class->getName();
+    $class_name = strtolower($class->getName());
 
     $classes = $this->config->getClasses();
 
