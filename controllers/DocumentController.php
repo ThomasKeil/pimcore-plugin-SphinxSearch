@@ -64,6 +64,9 @@ class SphinxSearch_DocumentController extends Pimcore_Controller_Action_Admin {
             break;
         }
       }
+      if ($document_config->count() == 0) {
+        unset($documents->$config_name);
+      }
     }
 
     $this->config->writeXml();
