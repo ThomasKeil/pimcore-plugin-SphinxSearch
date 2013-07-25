@@ -12,12 +12,6 @@
 
 class SphinxSearch {
 
-  /**
-   * @var $classes SphinxSearch_Classes
-   */
-  private $classes;
-
-
   public static function queryObjects($query, $class_name, $params = array()) {
     $search_result = self::searchObjects($query, $class_name, $params);
     $objectString = "Object_".ucfirst($class_name);
@@ -36,7 +30,7 @@ class SphinxSearch {
     return $search_result["total_found"];
   }
 
-  private function searchObjects($query, $class_name, $params = array()) {
+  private static function searchObjects($query, $class_name, $params = array()) {
     if (trim($query) == "") return array();
 
     $sphinx_config = SphinxSearch_Config::getInstance();
@@ -45,7 +39,7 @@ class SphinxSearch {
     $SphinxClient = new SphinxClient();
 
     $SphinxClient->SetMatchMode(SPH_MATCH_EXTENDED2);
-    $SphinxClient->setServer("localhost", $this->config->searchd->port);
+    $SphinxClient->setServer("localhost", $config->searchd->port);
 
     if (array_key_exists("language", $params)) {
       $language = $params["language"];
@@ -114,31 +108,6 @@ class SphinxSearch {
         $language = $locale->getLanguage();
       }
     }
-
-    /*
-       foreach ($documents_config as $document_name => $document_properties) {
-          $index_name = "idx_document_".$document_name."_".$language;
-
-          $field_weights = array();
-          foreach ($document_properties["elements"] as $field_name => $field_config) {
-            if (array_key_exists("weight", $field_config) && intval($field_config["weight"]) > 0) {
-              $field_weights[$field_name] = intval($field_config["weight"]);
-            }
-          }
-          var_dump($field_weights);
-          if (sizeof($field_weights) > 0) $SphinxClient->setFieldWeights($field_weights);
-
-          $search_result = $SphinxClient->Query($query, $index_name);
-          if ($search_result === false ) {
-            throw new Exception($SphinxClient->GetLastError());
-          }
-
-          if ($search_result["total_found"] > 0) {
-            foreach ($search_result["matches"] as $id => $meta) {
-              $entries[] = Document::getById($id);
-            }
-          }
-        }*/
 
     $field_weights = array();
     $indexes = array();
