@@ -13,14 +13,17 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
   protected $class_name;
 
-  public function __construct($query, $classname) {
+  public function __construct($query, $class_name) {
     parent::__construct($query);
+    $class_name = strtolower($class_name);
+    $this->class_name = $class_name;
+
     $sphinx_config = SphinxSearch_Config::getInstance();
     $class_config = $sphinx_config->getClassesAsArray(); // The configuration
 
-    $this->class_name = $classname;
+
     $field_weights = array();
-    foreach ($class_config[ucfirst($this->class_name)] as $field_name => $field_config) {
+    foreach ($class_config[$this->class_name] as $field_name => $field_config) {
       if (array_key_exists("weight", $field_config)) {
         $field_weights[$field_name] = $field_config["weight"];
       }
@@ -46,7 +49,7 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
     $objectString = "Object_".ucfirst($this->class_name);
     $entries = array();
-    foreach ($sliced as $id => $meta) {
+    foreach ($sliced as $id) {
       $entries[] = $objectString::getById($id);
     }
     $this->search_result_items = $entries;
@@ -59,7 +62,7 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
   private function getObjectIds() {
     if ($this->search_result_ids === null) {
-      $index = "idx_".ucfirst($this->class_name);
+      $index = "idx_".$this->class_name;
       $object_class = Object_Class::getByName($this->class_name);
       if($object_class->getFieldDefinition("localizedfields")) {
         $locale = Zend_Registry::get("Zend_Locale");
