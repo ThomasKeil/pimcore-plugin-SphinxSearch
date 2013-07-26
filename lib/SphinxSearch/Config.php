@@ -186,9 +186,9 @@ EOL;
 
 
 
-      $fields = array("oo_id", "o_creationDate", "o_modificationDate", "o_published");
+      $fields = array("oo_id", "o_creationDate", "o_modificationDate", "o_published", "o_type");
 
-      $attributes = array("o_creationDate" => "sql_attr_timestamp", "o_modificationDate" => "sql_attr_timestamp", "o_published" => "sql_field_string");
+      $attributes = array("o_creationDate" => "sql_attr_timestamp", "o_modificationDate" => "sql_attr_timestamp", "o_published" => "sql_field_string", "o_type" => "sql_field_string");
 
       foreach ($class->children() as $field) {
         $fields[] = $field->attributes()->name;

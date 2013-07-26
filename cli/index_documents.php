@@ -66,6 +66,7 @@ print "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 print "<sphinx:docset>\n";
 
 print "  <sphinx:schema>\n";
+print "    <sphinx:field name=\"o_published\"/>\n";
 foreach ($document_config["elements"] as $name => $element) {
   print "    <sphinx:field name=\"".$name."\"/>\n";
 }
@@ -97,7 +98,6 @@ foreach ($document_results as $document_result) {
   } catch (Exception $e) {
 
   }
-  //print $document->getFullPath()."\n";
   print "  </sphinx:document>\n";
 }
 
