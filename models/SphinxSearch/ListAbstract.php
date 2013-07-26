@@ -209,14 +209,6 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
   /**
    * (PHP 5 &gt;= 5.0.0)<br/>
-   * Return the current element
-   * @link http://php.net/manual/en/iterator.current.php
-   * @return mixed Can return any type.
-   */
-  public abstract function current();
-
-  /**
-   * (PHP 5 &gt;= 5.0.0)<br/>
    * Move forward to next element
    * @link http://php.net/manual/en/iterator.next.php
    * @return void Any returned value is ignored.
