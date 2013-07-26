@@ -13,6 +13,8 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
   protected $class_name;
 
+  protected $object_type = "object";
+
   public function __construct($query, $class_name) {
     parent::__construct($query);
     $class_name = strtolower($class_name);
@@ -72,6 +74,8 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
         $query = $query." @o_published 1";
       }
 
+      $query .= " @o_type ".$this->object_type;
+
       $search_result = $this->SphinxClient->Query($query, $index);
       if ($search_result === false ) {
         throw new Exception($this->SphinxClient->GetLastError()."\n query:".$this->query);
@@ -84,5 +88,10 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
       }
     }
     return $this->search_result_ids;
+  }
+
+  public function setObjectType($object_type) {
+    $this->object_type = $object_type;
+    return $this;
   }
 }
