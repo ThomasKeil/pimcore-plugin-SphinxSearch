@@ -33,7 +33,7 @@ New sphinx.conf is written if a document or classdefinition is changed.
 
 <h3>Querying the index</h3>
 
-        $result_array = SpinxSearch_SphinxSearch::queryObjects($query, $class_name);
+        $result_array = SphinxSearch_SphinxSearch::queryObjects($query, $class_name);
 
         // Suitable for Iterators or Paginators:
         $object_list = new SphinxSearch_ObjectList($query, $class_name);
