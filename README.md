@@ -24,7 +24,7 @@ For indexing to work correctly you need to run searchd as the webserver's user, 
  su www-data - -c "searchd -c <path_to_your_htdocs>/website/var/plugins/SphinxSearch/sphinx.conf"
 
 <h2>Usage</h2>
-<h3>Submitting information to the index</h2>
+<h3>Submitting information to the index</h3>
 
 For Objects, check the "Index" checkbox in the "Sphinx Settings" part of a classdefinition.
 Documents are indexed automatically.
