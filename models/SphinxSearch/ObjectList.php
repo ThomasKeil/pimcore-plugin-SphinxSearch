@@ -34,10 +34,7 @@ class SphinxSearch_ObjectList extends SphinxSearch_ListAbstract {
 
   public function current() {
     $this->load();
-    $id = $this->search_result_ids[$this->pointer];
-    $objectString = "Object_".ucfirst($this->class_name);
-    $object = $objectString::getById($id);
-    return $object;
+    return $this->search_result_items[$this->pointer];
   }
 
   public function load($override = false) {
