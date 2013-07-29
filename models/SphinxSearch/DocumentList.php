@@ -33,8 +33,7 @@ class SphinxSearch_DocumentList extends SphinxSearch_ListAbstract {
 
   public function current() {
     $this->load();
-    $id = $this->search_result_ids[$this->pointer];
-    return Document::getById($id);
+    return $this->search_result_items[$this->pointer];
   }
 
   public function load($override = false) {
@@ -44,10 +43,10 @@ class SphinxSearch_DocumentList extends SphinxSearch_ListAbstract {
 
     $search_result = $this->getDocumentIds();
     $sliced = array_slice($search_result, $this->offset, $this->limit, true);
-
     $documents = array();
-    foreach ($sliced as $id => $meta) {
-      $documents[] = Document::getById($id);
+    foreach ($sliced as $id) {
+      $document = Document::getById($id);
+      $documents[] = $document;
     }
 
     $this->search_result_items = $documents;
