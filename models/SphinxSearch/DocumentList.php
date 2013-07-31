@@ -9,7 +9,7 @@
 
 // http://framework.zend.com/manual/1.12/de/zend.paginator.advanced.html#zend.paginator.advanced.adapters
 
-class SphinxSearch_DocumentList extends SphinxSearch_ListAbstract {
+class SphinxSearch_DocumentList extends SphinxSearch_Abstract_List {
 
   public function __construct($query) {
     parent::__construct($query);

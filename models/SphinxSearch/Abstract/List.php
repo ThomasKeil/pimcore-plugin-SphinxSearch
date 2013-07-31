@@ -9,7 +9,7 @@
 
 // http://framework.zend.com/manual/1.12/de/zend.paginator.advanced.html#zend.paginator.advanced.adapters
 
-abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Interface, Zend_Paginator_AdapterAggregate, Iterator {
+abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Interface, Zend_Paginator_AdapterAggregate, Iterator {
 
   protected $offset = 0;
   protected $limit = 0;
@@ -22,8 +22,11 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
    */
   protected $SphinxClient;
 
+  /**
+   * @var string The query to use when using the API'ss query-functionality
+   */
   protected $query = "";
-
+  
   protected $pointer = 0;
 
   protected $plugin_config;
@@ -45,9 +48,8 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
 
 
   public function __construct($query) {
-    $this->query = $query;
-
     $sphinx_config = SphinxSearch_Config::getInstance();
+    $this->query = $query;
 
     $this->plugin_config = $sphinx_config->getConfig();
 
@@ -121,21 +123,6 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
   }
 
   /**
-   * @return bool
-   */
-  public function getUnpublished() {
-    return $this->unpublished;
-  }
-
-  /**
-   * @return SphinxSearch_ListAbstract
-   */
-  public function setUnpublished($unpublished) {
-    $this->unpublished = (bool) $unpublished;
-    return $this;
-  }
-
-  /**
    * Sets the select clause, listing specific attributes to fetch, and expressions to compute and fetch.
    *
    * @param $clause SQL-like clause.
@@ -166,6 +153,22 @@ abstract class SphinxSearch_ListAbstract implements Zend_Paginator_Adapter_Inter
     }
     return $this;
   }
+
+  /**
+   * @return bool
+   */
+  public function getUnpublished() {
+    return $this->unpublished;
+  }
+
+  /**
+   * @return SphinxSearch_ListAbstract
+   */
+  public function setUnpublished($unpublished) {
+    $this->unpublished = (bool) $unpublished;
+    return $this;
+  }
+
 
   /**
    * Returns a collection of items for a page.
