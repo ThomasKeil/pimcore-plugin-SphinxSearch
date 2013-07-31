@@ -69,7 +69,8 @@ class SphinxSearch_Config {
         foreach ($child_node->attributes() as $key => $value) $attributes[$key] = $value;
         $name = strval($attributes["name"]);
         $classes[$class_name][$name] = array(
-          "weight" => array_key_exists("weight", $attributes) ? intval($attributes["weight"]) : 1
+          "weight" => array_key_exists("weight", $attributes) ? intval($attributes["weight"]) : 1,
+          "store_attribute" => array_key_exists("field_type", $attributes)
         );
       }
     }

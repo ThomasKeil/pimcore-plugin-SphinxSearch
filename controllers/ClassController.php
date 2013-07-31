@@ -62,6 +62,7 @@ class SphinxSearch_ClassController extends Pimcore_Controller_Action_Admin {
         if (array_key_exists($layout_definition->name, $class_configuration)) {
           $layout_definition->index_sphinx = true;
           $layout_definition->weight_sphinx = intval($class_configuration[$layout_definition->name]["weight"]);
+          $layout_definition->store_sphinx = $class_configuration[$layout_definition->name]["store_attribute"];
         }
         break;
     }
@@ -107,22 +108,23 @@ class SphinxSearch_ClassController extends Pimcore_Controller_Action_Admin {
               $node->addAttribute("weight", $weight);
             }
 
-            switch ($field_type) {
-              case "input":
-              case "textarea":
-              case "wysiwyg":
-                $node->addAttribute("field_type", "sql_field_string");
-                break;
-              case "date":
-              case "datetime":
-              case "time":
-                $node->addAttribute("field_type", "sql_attr_timestamp");
-                break;
-              case "numeric":
-                $node->addAttribute("field_type", "sql_attr_float");
-                break;
+            if ($child["store_sphinx"] == 1) {
+              switch ($field_type) {
+                case "input":
+                case "textarea":
+                case "wysiwyg":
+                  $node->addAttribute("field_type", "sql_field_string");
+                  break;
+                case "date":
+                case "datetime":
+                case "time":
+                  $node->addAttribute("field_type", "sql_attr_timestamp");
+                  break;
+                case "numeric":
+                  $node->addAttribute("field_type", "sql_attr_float");
+                  break;
+              }
             }
-
           }
         }
       }

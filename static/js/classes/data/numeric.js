@@ -24,6 +24,12 @@ pimcore.object.classes.data.numeric = Class.create(pimcore.object.classes.data.n
                     checked: this.datax.index_sphinx
                 },
                 {
+                    xtype: "checkbox",
+                    fieldLabel: t("store sphinx"),
+                    name: "store_sphinx",
+                    checked: this.datax.store_sphinx
+                },
+                {
                     xtype: "spinnerfield",
                     fieldLabel: t("sphinx weight"),
                     name: "weight_sphinx",

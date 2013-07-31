@@ -1,6 +1,7 @@
 "Sphinx settings", "Sphinx settings"
 "sphinx weight", "weights"
 "index sphinx", "Index with Sphinx"
+"store sphinx", "Store as <a href='http://sphinxsearch.com/docs/2.0.7/attributes.html' target='_blank'>attribute</a>"
 "sphinx_class_saved_successfully", "Class saved successfully with Sphinx"
 "sphinx_class_save_error", "Error saving class with sphinx"
 "Sphinxsearch settings", "SphinxSearch settings"
