@@ -74,7 +74,7 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
 
   /**
    * @param  $order
-   * @return SphinxSearch_ListAbstract
+   * @return SphinxSearch_Abstract_List
    */
   public function setOrder($order) {
     $order = strtoupper($order);
@@ -93,7 +93,7 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
 
   /**
    * @param string $order_key
-   * @return SphinxSearch_ListAbstract
+   * @return SphinxSearch_Abstract_List
    */
   public function setOrderKey($order_key) {
     $this->order_key = $order_key;
@@ -110,7 +110,7 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
 
   /**
    * @param $offset
-   * @return SphinxSearch_ListAbstract
+   * @return SphinxSearch_Abstract_List
    */
   public function setOffset($offset) {
     $this->offset = $offset;
@@ -126,7 +126,7 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
    * Sets the select clause, listing specific attributes to fetch, and expressions to compute and fetch.
    *
    * @param $clause SQL-like clause.
-   * @return SphinxSearch_ListAbstract
+   * @return SphinxSearch_Abstract_List
    * @throws Exception
    */
   public function setSelect($clause) {
@@ -143,7 +143,7 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
    * @param $attribute An attribute name.
    * @param $values Plain array of integer values.
    * @param bool $exclude If set to TRUE, matching items are excluded from the result set.
-   * @return SphinxSearch_ListAbstract
+   * @return SphinxSearch_Abstract_List
    * @throws Exception on failure
    */
   public function setFilter($attribute, $values, $exclude = false) {
@@ -162,7 +162,7 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
   }
 
   /**
-   * @return SphinxSearch_ListAbstract
+   * @return SphinxSearch_Abstract_List
    */
   public function setUnpublished($unpublished) {
     $this->unpublished = (bool) $unpublished;
