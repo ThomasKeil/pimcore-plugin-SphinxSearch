@@ -169,6 +169,13 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
     return $this;
   }
 
+  /**
+   * @return SphinxClient
+   */
+  public function getSphinxClient() {
+    return $this->SphinxClient;
+  }
+
 
   /**
    * Returns a collection of items for a page.
