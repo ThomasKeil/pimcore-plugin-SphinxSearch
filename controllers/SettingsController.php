@@ -15,7 +15,10 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
 
 	public function settingsAction() {
     $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
-		$settings = array(
+
+    $lastrun = new Zend_Date($config->indexer->lastrun);
+
+    $settings = array(
       "pid" => $config->path->pid,
       "logfile" => $config->path->log,
       "querylog" => $config->path->querylog,
@@ -23,7 +26,8 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
       "indexer_maintenance" => $config->indexer->runwithmaintenance,
       "indexer_period" => $config->indexer->period,
       "searchd_port" => $config->searchd->port > 0 ? $config->searchd->port : 9312,
-      "documents_i18n" => $config->documents->use_i18n == "true"
+      "documents_i18n" => $config->documents->use_i18n == "true",
+      "indexer_lastrun" => $lastrun->get(Zend_Date::DATETIME)
     );
 		
 		$this->_helper->json($settings);

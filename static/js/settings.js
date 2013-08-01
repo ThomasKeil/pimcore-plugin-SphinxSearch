@@ -37,6 +37,9 @@ sphinxsearch.settings = Class.create({
                 pimcore.globalmanager.remove("sphinxsearch_settings");
             }.bind(this));
 
+            var indexer_lastrun_template = new Ext.XTemplate(t('indexer_lastrun'));
+            var indexer_lastrun_data = {lastrun: this.data.indexer_lastrun};
+
             this.layout = new Ext.FormPanel({
                 bodyStyle:'padding:20px 5px 20px 5px;',
                 border: false,
@@ -59,7 +62,11 @@ sphinxsearch.settings = Class.create({
                     }
 
                 ],
-                bbar: ["<span>Developed by: <a href='http://www.weblizards.de' target='_blank'>Weblizards - Custom Internet Solutions</a></span>"],
+                bbar: [
+                    "<span>Developed by: <a href='http://www.weblizards.de' target='_blank'>Weblizards - Custom Internet Solutions</a></span>",
+                    " - ",
+                    indexer_lastrun_template.apply(indexer_lastrun_data)
+                ],
                 items: [
                     {
                         xtype:'fieldset',

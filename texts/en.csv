@@ -27,3 +27,4 @@
 "Save", "Save"
 "indexer_path_explanation","By specifying a realtive path PIMCORE_DOCUMENT_ROOT will automatically be used as base path."
 "searchd port", "Port"
+"indexer_lastrun", "The indexer ran {lastrun} for the last time."
