@@ -14,5 +14,8 @@
         <lastrun>0</lastrun>
         <runwithmaintenance></runwithmaintenance>
     </indexer>
+    <documents>
+        <use_i18n>false</use_i18n>
+    </documents>
     <maxresults>1000</maxresults>
 </zend-config>

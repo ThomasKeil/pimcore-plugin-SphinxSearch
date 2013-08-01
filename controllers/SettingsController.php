@@ -22,7 +22,8 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
       "indexer" => $config->path->indexer,
       "indexer_maintenance" => $config->indexer->runwithmaintenance,
       "indexer_period" => $config->indexer->period,
-      "searchd_port" => $config->searchd->port > 0 ? $config->searchd->port : 9312
+      "searchd_port" => $config->searchd->port > 0 ? $config->searchd->port : 9312,
+      "documents_i18n" => $config->documents->use_i18n == "true"
     );
 		
 		$this->_helper->json($settings);
