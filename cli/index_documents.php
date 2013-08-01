@@ -67,6 +67,9 @@ print "<sphinx:docset>\n";
 
 print "  <sphinx:schema>\n";
 print "    <sphinx:field name=\"o_published\"/>\n";
+print "    <sphinx:field name=\"title\"/>\n";
+print "    <sphinx:field name=\"description\"/>\n";
+print "    <sphinx:field name=\"keywords\"/>\n";
 foreach ($document_config["elements"] as $name => $element) {
   print "    <sphinx:field name=\"".$name."\"/>\n";
 }
@@ -75,10 +78,16 @@ print "  </sphinx:schema>\n";
 
 foreach ($document_results as $document_result) {
   try {
+    /**
+     * @var Document_Page $document
+     */
     $document = Document_Page::getById($document_result["id"]);
     if ($opts->language != "all" && $document->getProperty("language") != $opts->language ) continue;
     print "\n  <sphinx:document id=\"".$document->getId()."\">\n";
     print "<o_published>".($document->getPublished() ? "1" : "0")."</o_published>\n";
+    print "<title>".$document->getTitle()."</title>\n";
+    print "<description>".$document->getDescription()."</description>\n";
+    print "<keywords>".$document->getKeywords()."</keywords>\n";
     foreach ($document_config["elements"] as $element_name => $element_config) {
       $element = $document->getElement($element_name);
       if (is_null($element)) {
@@ -90,7 +99,7 @@ foreach ($document_results as $document_result) {
             print "    <".$element_name."><![CDATA[[".$element->text."]]></".$element_name.">\n";
             break;
           default:
-            var_dump($element);
+            //var_dump($element);
             break;
         }
       }
