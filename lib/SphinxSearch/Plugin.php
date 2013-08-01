@@ -98,7 +98,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
       logger::debug("SphinxSearch Indexer: starting");
 
 
-      // $output = self::runIndexer();
+      $output = self::runIndexer();
 
     } else {
       logger::debug("SphinxSearch Plugin is not installed - no maintenance to do for this plugin.");
