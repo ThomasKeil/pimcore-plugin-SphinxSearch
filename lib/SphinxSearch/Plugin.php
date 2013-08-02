@@ -106,7 +106,9 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
   }
 
   public static function runIndexer() {
+    $lockfile = SPHINX_VAR.DIRECTORY_SEPARATOR."lock.txt";
     $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
+    $output = array();
 
     $indexer = "/usr/bin/indexer";
     if (isset($config->path->indexer) && $config->path->indexer != "") {
@@ -114,25 +116,49 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     }
 
     if (!(is_file($indexer) && is_executable($indexer))) {
-      logger::err("SphinxSearch Indexer could not be executed at ".$indexer);
-      return;
+      $message = "SphinxSearch Indexer could not be executed at ".$indexer;
+      logger::err($message);
+      $output[] = $message;
+      $return_var = 1;
+    } else {
+
+      $fp = @fopen($lockfile, "a+");
+
+      if ($fp === false) {
+        $message = "SphinxSearch Indexer could open lockfile ".$lockfile;
+        logger::err($message);
+        $output[] = $message;
+        $return_var = 1;
+      } else {
+        if (flock($fp, LOCK_EX|LOCK_NB)) {
+          logger::debug("SphinxSearch Indexer locked with ".$lockfile);
+          ftruncate($fp, 0);
+          fwrite($fp, getmypid());
+          fflush($fp);
+
+          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf --all --rotate ", $output, $return_var);
+
+          if ($return_var == 0) {
+            $config->indexer->lastrun = time();
+            $writer = new Zend_Config_Writer_Xml(array(
+              "config" => $config,
+              "filename" => SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml"
+            ));
+            $writer->write();
+          }
+
+          flock($fp, LOCK_UN);    // release the lock
+          logger::debug("SphinxSearch Indexer unlocked".$lockfile);
+          $return_var = 0;
+        } else {
+          $message = "SphinxSearch Indexer is not executed: locked with ".$lockfile;
+          logger::err($message);
+          $output[] = $message;
+          $return_var = 1;
+        }
+        fclose($fp);
+      }
     }
-
-    $output = array();
-    $return_var = 0;
-
-    exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf --all --rotate ", $output, $return_var);
-
-    if ($return_var == 0) {
-      $config->indexer->lastrun = time();
-      $writer = new Zend_Config_Writer_Xml(array(
-        "config" => $config,
-        "filename" => SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml"
-      ));
-      $writer->write();
-    }
-
-
     return array("output" => implode("\n",$output), "return_var" => $return_var);
   }
 }
