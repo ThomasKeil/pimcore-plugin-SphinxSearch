@@ -105,7 +105,50 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     }
   }
 
-  public static function runIndexer() {
+  public function postUpdateObject(Object_Abstract $object) {
+    $this->reindex_objects($object);
+  }
+
+  public function postAddObject(Object_Abstract $object) {
+    $this->reindex_objects($object);
+  }
+
+  private function reindex_objects(Object_Abstract $object) {
+    $config = SphinxSearch_Config::getInstance();
+    $indexes = array();
+    foreach ($config->getClasses()->children() as $class) {
+      /**
+       * @var $class SimpleXMLElement
+       */
+
+      $class_name = $class->getName();
+      if (strtolower("Object_".$class_name) == strtolower(get_class($object))) {
+        logger::debug("Klasse: ".$class_name);
+        $object_class = Object_Class::getByName($class_name);
+        // Do we have localized fields?
+        if($object_class->getFieldDefinition("localizedfields")) {
+          $pimcore_languages = Pimcore_Tool::getValidLanguages();
+          foreach ($pimcore_languages as $lang) {
+            $source_class_name = $class_name."_".$lang;
+            $indexes[] = "idx_".$source_class_name;
+          }
+        } else {
+          $indexes[] = "idx_".$class_name;
+        }
+      }
+    }
+    if (sizeof($indexes) > 0) {
+      $indexes = implode(" ", $indexes);
+      logger::debug("Indexes: ".$indexes);
+      $this->runIndexer($indexes);
+    }
+  }
+
+
+  public static function runIndexer($index_name = null) {
+    if (is_null($index_name)) {
+      $index_name == "--all";
+    }
     $lockfile = SPHINX_VAR.DIRECTORY_SEPARATOR."lock.txt";
     $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
     $output = array();
@@ -136,7 +179,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
           fwrite($fp, getmypid());
           fflush($fp);
 
-          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf --all --rotate ", $output, $return_var);
+          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf ".$index_name." --rotate ", $output, $return_var);
 
           if ($return_var == 0) {
             $config->indexer->lastrun = time();
