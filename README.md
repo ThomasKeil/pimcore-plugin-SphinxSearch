@@ -41,4 +41,5 @@ New sphinx.conf is written if a document or classdefinition is changed.
         $document_list = new SphinxSearch_DocumentList($query);
 
 <h2>Contact the author</h2>
+This plugin is developed by <a href="http://www.weblizards.de/">Weblizards - Custom Internet Solutions</a>.
 You can contact the author at thomas@weblizards.de
