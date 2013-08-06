@@ -113,6 +113,10 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     $this->reindex_objects($object);
   }
 
+  public function preDeleteObject(Object_Abstract $object){
+    $this->reindex_objects($object);
+  }
+
   private function reindex_objects(Object_Abstract $object) {
     $config = SphinxSearch_Config::getInstance();
     $indexes = array();
@@ -123,7 +127,6 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
       $class_name = $class->getName();
       if (strtolower("Object_".$class_name) == strtolower(get_class($object))) {
-        logger::debug("Klasse: ".$class_name);
         $object_class = Object_Class::getByName($class_name);
         // Do we have localized fields?
         if($object_class->getFieldDefinition("localizedfields")) {
@@ -139,11 +142,53 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     }
     if (sizeof($indexes) > 0) {
       $indexes = implode(" ", $indexes);
-      logger::debug("Indexes: ".$indexes);
       $this->runIndexer($indexes);
     }
   }
 
+  public function postAddDocument(Document $document){
+    $this->reindex_documents($document);
+  }
+
+  public function postUpdateDocument(Document $document){
+    $this->reindex_documents($document);
+  }
+
+  public function preDeleteDocument(Document $document){
+    $this->reindex_documents($document);
+  }
+
+
+  private function reindex_documents(Document $document) {
+    $config = SphinxSearch_Config::getInstance();
+    $documents_config = $config->getDocumentsAsArray();
+
+    $languages = array("all");
+    if ($this->config->documents->use_i18n == "true") {
+      $languages = Pimcore_Tool::getValidLanguages();
+    }
+
+    $controller = $document->getController();
+    $action = $document->getAction();
+    $template = $document->getTemplate();
+
+    $config_name = $controller."_".$action;
+    if ($template != "") $config_name."_".$template;
+
+    $indexes = array();
+    foreach ($languages as $lang) {
+      foreach ($documents_config as $document_name => $document_properties) {
+        if ($config_name == $document_name) {
+          $indexes[] = "idx_document_".$document_name."_".$lang;
+        }
+      }
+    }
+    if (sizeof($indexes) > 0) {
+      $indexes = implode(" ", $indexes);
+      $this->runIndexer($indexes);
+    }
+
+  }
 
   public static function runIndexer($index_name = null) {
     if (is_null($index_name)) {
