@@ -192,7 +192,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
   public static function runIndexer($index_name = null) {
     if (is_null($index_name)) {
-      $index_name == "--all";
+      $index_name = "--all";
     }
     $lockfile = SPHINX_VAR.DIRECTORY_SEPARATOR."lock.txt";
     $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
