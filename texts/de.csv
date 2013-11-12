@@ -28,3 +28,7 @@
 "indexer_path_explanation","Bei Angabe von relativen Pfaden wird automatisch PIMCORE_DOCUMENT_ROOT als Basispfad verwendet."
 "searchd port", "Port"
 "indexer_lastrun", "Der Indexer lief das letzte mal um am: {lastrun}"
+"indexer_on_change", "Bei Änderungen an Datensätzen"
+"Update immediately", "Sofort updaten"
+"Reschedule Maintenance", "Mit nächster Maintenance"
+"Do nothing", "Nichts machen"
