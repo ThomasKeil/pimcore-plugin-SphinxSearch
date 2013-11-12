@@ -124,35 +124,55 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
   public static function reindex_objects($object) {
     $config = SphinxSearch_Config::getInstance();
-    $indexes = array();
-    foreach ($config->getClasses()->children() as $class) {
-      /**
-       * @var $class SimpleXMLElement
-       */
 
-      if ($object instanceof Object_Abstract) {
-        $class_name = $class->getName();
-      } else {
-        $class_name = $object;
-      }
+    $plugin_config = $config->getConfig();
 
-      if (strtolower("Object_".$class_name) == strtolower(get_class($object))) {
-        $object_class = Object_Class::getByName($class_name);
-        // Do we have localized fields?
-        if($object_class->getFieldDefinition("localizedfields")) {
-          $pimcore_languages = Pimcore_Tool::getValidLanguages();
-          foreach ($pimcore_languages as $lang) {
-            $source_class_name = $class_name."_".$lang;
-            $indexes[] = "idx_".$source_class_name;
+
+    switch ($plugin_config->indexer->onchange) {
+      case "immediately":
+
+        $indexes = array();
+        foreach ($config->getClasses()->children() as $class) {
+          /**
+           * @var $class SimpleXMLElement
+           */
+          if ($object instanceof Object_Abstract) {
+            $class_name = $class->getName();
+          } else {
+            $class_name = $object;
           }
-        } else {
-          $indexes[] = "idx_".$class_name;
+          if (strtolower("Object_".$class_name) == strtolower(get_class($object))) {
+            $object_class = Object_Class::getByName($class_name);
+            // Do we have localized fields?
+            if($object_class->getFieldDefinition("localizedfields")) {
+              $pimcore_languages = Pimcore_Tool::getValidLanguages();
+              foreach ($pimcore_languages as $lang) {
+                $source_class_name = $class_name."_".$lang;
+                $indexes[] = "idx_".$source_class_name;
+              }
+            } else {
+              $indexes[] = "idx_".$class_name;
+            }
+          }
         }
-      }
-    }
-    if (sizeof($indexes) > 0) {
-      $indexes = implode(" ", $indexes);
-      self::runIndexer($indexes);
+        if (sizeof($indexes) > 0) {
+          $indexes = implode(" ", $indexes);
+          self::runIndexer($indexes);
+        }
+        break;
+
+      case "reschedule":
+        $plugin_config->indexer->lastrun = 0;
+        $writer = new Zend_Config_Writer_Xml(array(
+          "config" => $plugin_config,
+          "filename" => SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml"
+        ));
+        $writer->write();
+        break;
+
+      default:
+        // Do nothing
+        break;
     }
   }
 
@@ -204,9 +224,6 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     if (is_null($index_name)) {
       $index_name = "--all";
     }
-
-    if (!self::$reindexing_enabled) return;
-
     $lockfile = SPHINX_VAR.DIRECTORY_SEPARATOR."lock.txt";
     $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
     $output = array();
@@ -262,22 +279,6 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     }
     return array("output" => implode("\n",$output), "return_var" => $return_var);
   }
-
-  /**
-   * Disables reindexing of SphinxSearch Index, e.g. for large imports
-   * @static
-   * @return void
-   */
-  public static function disable_reindexing() {
-    self::$reindexing_enabled = false;
-  }
-
-  /**
-   * @static
-   * @return void
-   */
-  public static function enable_reindexing() {
-    self::$reindexing_enabled = true;
-  }
-
 }
+
+// --config /var/www/www.kontron-development.com/htdocs/website/var/plugins/SphinxSearch/sphinx.conf --all --rotate
