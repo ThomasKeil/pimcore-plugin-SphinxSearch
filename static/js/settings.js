@@ -28,6 +28,15 @@ sphinxsearch.settings = Class.create({
                 closable:true
             });
 
+            var onchange_store = new Ext.data.ArrayStore({
+                    id: 0,
+                    fields: [
+                        'key',
+                        'value'
+                    ],
+                    data: [["immediately", t('Update immediately')], ["reschedule", t("Reschedule Maintenance")], ["nothing", t("Do nothing")]]
+                });
+
             var tabPanel = Ext.getCmp("pimcore_panel_tabs");
             tabPanel.add(this.panel);
             tabPanel.activate("sphinxsearch_settings");
@@ -112,7 +121,7 @@ sphinxsearch.settings = Class.create({
                                 width: 600,
                                 value: t('indexer_path_explanation'),
                                 cls: "pimcore_extra_label_bottom"
-                            },
+                            }
 
                         ]
                     },
@@ -152,7 +161,23 @@ sphinxsearch.settings = Class.create({
                                 width: 600,
                                 value: t('indexer_period_description'),
                                 cls: "pimcore_extra_label_bottom"
+                            },
+                            {
+                                fieldLabel: t('indexer_on_change'),
+                                name: 'sphinxsearch.indexer_onchange',
+                                xtype: "combo",
+                                editable: false,
+                                triggerAction: 'all',
+                                mode: "local",
+                                store: onchange_store,
+                                valueField: "key",
+                                displayField: "value",
+                                value: this.data.indexer_onchange,
+                                width: 400,
+                                listWidth: 400
                             }
+
+
                         ]
                     },
                     {
