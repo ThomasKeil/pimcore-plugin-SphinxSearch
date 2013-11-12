@@ -18,6 +18,11 @@ if (!class_exists("SphinxClient")) require_once("sphinxapi.php");
 
 class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore_API_Plugin_Interface {
 
+  /**
+   * @var bool
+   */
+  public static $reindexing_enabled = true;
+
   public static function needsReloadAfterInstall() {
       return true; // User muss neu geladen werden
   }
@@ -106,18 +111,18 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
   }
 
   public function postUpdateObject(Object_Abstract $object) {
-    $this->reindex_objects($object);
+    self::reindex_objects($object);
   }
 
   public function postAddObject(Object_Abstract $object) {
-    $this->reindex_objects($object);
+    self::reindex_objects($object);
   }
 
   public function preDeleteObject(Object_Abstract $object){
-    $this->reindex_objects($object);
+    self::reindex_objects($object);
   }
 
-  private function reindex_objects(Object_Abstract $object) {
+  public static function reindex_objects($object) {
     $config = SphinxSearch_Config::getInstance();
     $indexes = array();
     foreach ($config->getClasses()->children() as $class) {
@@ -125,7 +130,12 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
        * @var $class SimpleXMLElement
        */
 
-      $class_name = $class->getName();
+      if ($object instanceof Object_Abstract) {
+        $class_name = $class->getName();
+      } else {
+        $class_name = $object;
+      }
+
       if (strtolower("Object_".$class_name) == strtolower(get_class($object))) {
         $object_class = Object_Class::getByName($class_name);
         // Do we have localized fields?
@@ -142,7 +152,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     }
     if (sizeof($indexes) > 0) {
       $indexes = implode(" ", $indexes);
-      $this->runIndexer($indexes);
+      self::runIndexer($indexes);
     }
   }
 
@@ -194,6 +204,9 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     if (is_null($index_name)) {
       $index_name = "--all";
     }
+
+    if (!self::$reindexing_enabled) return;
+
     $lockfile = SPHINX_VAR.DIRECTORY_SEPARATOR."lock.txt";
     $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
     $output = array();
@@ -249,6 +262,22 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     }
     return array("output" => implode("\n",$output), "return_var" => $return_var);
   }
-}
 
-// --config /var/www/www.kontron-development.com/htdocs/website/var/plugins/SphinxSearch/sphinx.conf --all --rotate
+  /**
+   * Disables reindexing of SphinxSearch Index, e.g. for large imports
+   * @static
+   * @return void
+   */
+  public static function disable_reindexing() {
+    self::$reindexing_enabled = false;
+  }
+
+  /**
+   * @static
+   * @return void
+   */
+  public static function enable_reindexing() {
+    self::$reindexing_enabled = true;
+  }
+
+}
