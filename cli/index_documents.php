@@ -85,9 +85,9 @@ foreach ($document_results as $document_result) {
     if ($opts->language != "all" && $document->getProperty("language") != $opts->language ) continue;
     print "\n  <sphinx:document id=\"".$document->getId()."\">\n";
     print "<o_published>".($document->getPublished() ? "1" : "0")."</o_published>\n";
-    print "<title>".$document->getTitle()."</title>\n";
-    print "<description>".$document->getDescription()."</description>\n";
-    print "<keywords>".$document->getKeywords()."</keywords>\n";
+    print "<title><![CDATA[[".$document->getTitle()."]]></title>\n";
+    print "<description><![CDATA[[".$document->getDescription()."]]></description>\n";
+    print "<keywords><![CDATA[[".$document->getKeywords()."]]></keywords>\n";
     foreach ($document_config["elements"] as $element_name => $element_config) {
       $element = $document->getElement($element_name);
       if (is_null($element)) {
