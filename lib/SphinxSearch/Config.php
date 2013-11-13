@@ -145,7 +145,7 @@ unlink_old = 1
 
 EOL;
 
-    $indexer = $cli_path.DIRECTORY_SEPARATOR."index_documents.php";
+    $indexer = $this->config->path->phpcli." ".$cli_path.DIRECTORY_SEPARATOR."index_documents.php";
 
     $documents_config = $this->getDocumentsAsArray();
 

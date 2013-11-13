@@ -298,5 +298,3 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     return array("output" => implode("\n",$output), "return_var" => $return_var);
   }
 }
-
-// --config /var/www/www.kontron-development.com/htdocs/website/var/plugins/SphinxSearch/sphinx.conf --all --rotate
