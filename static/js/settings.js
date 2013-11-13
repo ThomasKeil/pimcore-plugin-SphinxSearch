@@ -22,7 +22,7 @@ sphinxsearch.settings = Class.create({
             this.panel = new Ext.Panel({
                 id: "sphinxsearch_settings",
                 title: t("Sphinxsearch settings"),
-                iconCls: "sitemap_icon_root",
+                iconCls: "sphinxsearch_icon_root",
                 border: false,
                 layout: "fit",
                 closable:true
@@ -123,6 +123,25 @@ sphinxsearch.settings = Class.create({
                                 cls: "pimcore_extra_label_bottom"
                             }
 
+                        ]
+                    },
+                    {
+                        xtype:'fieldset',
+                        title: t('PHP'),
+                        collapsible: false,
+                        collapsed: false,
+                        autoHeight:true,
+                        labelWidth: 250,
+                        defaultType: 'textfield',
+                        defaults: {width: 150},
+                        items :[
+                            {
+                                fieldLabel: t("PHP commandline binary"),
+                                xtype: "textfield",
+                                name: "sphinxsearch.path_phpcli",
+                                value: this.data.phpcli,
+                                width: 350
+                            }
                         ]
                     },
                     {

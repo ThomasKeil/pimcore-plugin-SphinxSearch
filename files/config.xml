@@ -5,6 +5,7 @@
         <log>website/var/log/sphinxsearch_searchd.log</log>
         <querylog>website/var/log/sphinxsearch_query.log</querylog>
         <indexer>/usr/bin/indexer</indexer>
+        <phpcli>/usr/bin/php</phpcli>
     </path>
     <searchd>
         <port>9312</port>
