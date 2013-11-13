@@ -124,10 +124,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
   public static function reindex_objects($object) {
     $config = SphinxSearch_Config::getInstance();
-
     $plugin_config = $config->getConfig();
-
-
     switch ($plugin_config->indexer->onchange) {
       case "immediately":
 
@@ -190,33 +187,54 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
 
   private function reindex_documents(Document $document) {
+    if (!$document instanceof Document_Page) return;
+
     $config = SphinxSearch_Config::getInstance();
-    $documents_config = $config->getDocumentsAsArray();
+    $plugin_config = $config->getConfig();
+    switch ($plugin_config->indexer->onchange) {
+      case "immediately":
+        $documents_config = $config->getDocumentsAsArray();
 
-    $languages = array("all");
-    if ($this->config->documents->use_i18n == "true") {
-      $languages = Pimcore_Tool::getValidLanguages();
-    }
-
-    $controller = $document->getController();
-    $action = $document->getAction();
-    $template = $document->getTemplate();
-
-    $config_name = $controller."_".$action;
-    if ($template != "") $config_name."_".$template;
-
-    $indexes = array();
-    foreach ($languages as $lang) {
-      foreach ($documents_config as $document_name => $document_properties) {
-        if ($config_name == $document_name) {
-          $indexes[] = "idx_document_".$document_name."_".$lang;
+        $languages = array("all");
+        if ($this->config->documents->use_i18n == "true") {
+          $languages = Pimcore_Tool::getValidLanguages();
         }
-      }
+
+        $controller = $document->getController();
+        $action = $document->getAction();
+        $template = $document->getTemplate();
+
+        $config_name = $controller."_".$action;
+        if ($template != "") $config_name."_".$template;
+
+        $indexes = array();
+        foreach ($languages as $lang) {
+          foreach ($documents_config as $document_name => $document_properties) {
+            if ($config_name == $document_name) {
+              $indexes[] = "idx_document_".$document_name."_".$lang;
+            }
+          }
+        }
+        if (sizeof($indexes) > 0) {
+          $indexes = implode(" ", $indexes);
+          $this->runIndexer($indexes);
+        }
+        break;
+
+      case "reschedule":
+        $plugin_config->indexer->lastrun = 0;
+        $writer = new Zend_Config_Writer_Xml(array(
+          "config" => $plugin_config,
+          "filename" => SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml"
+        ));
+        $writer->write();
+        break;
+
+      default:
+        // Do nothing
+        break;
     }
-    if (sizeof($indexes) > 0) {
-      $indexes = implode(" ", $indexes);
-      $this->runIndexer($indexes);
-    }
+
 
   }
 
