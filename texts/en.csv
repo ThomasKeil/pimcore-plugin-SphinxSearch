@@ -35,3 +35,7 @@
 "Do nothing", "Do nothing"
 "PHP", "PHP"
 "PHP commandline binary", "PHP commandline binary"
+"Searchd started sucessfully", "Searchd started sucessfully"
+"Searchd could not be started", "Searchd could not be started"
+"Error starting Searchd", "Error starting Searchd"
+"Start Searchd", "Start Searchd"

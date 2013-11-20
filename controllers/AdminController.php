@@ -19,4 +19,9 @@ class SphinxSearch_AdminController extends Pimcore_Controller_Action {
     $this->_helper->json(array("success" => $output["return_var"] == 0, "message" => $output["output"]));
   }
 
+  public function startsearchdAction() {
+    $output = SphinxSearch_Plugin::startSearchd();
+    $this->_helper->json(array("success" => $output["result"], "message" => $output["message"]));
+  }
+
 }

@@ -35,3 +35,7 @@
 "Do nothing", "Nichts machen"
 "PHP", "PHP"
 "PHP commandline binary", "PHP commandline binary"
+"Searchd started sucessfully", "Searchd wurde gestartet."
+"Searchd could not be started", "Searchd konnte nicht gestartet werden."
+"Error starting Searchd", "Fehler beim Starten von Searchd."
+"Start Searchd", "Start Searchd"

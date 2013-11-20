@@ -19,7 +19,9 @@ Download the plugin and copy it to plugins/SphinxSearch, e.g.
         cd plugins
         git clone https://github.com/ThomasKeil/pimcore-plugin-SphinxSearch.git SphinxSearch
 
-For indexing to work correctly you need to run searchd as the webserver's user, e.g.
+For indexing to work correctly you need to run searchd, this can be done in the plugin's settings.
+
+If this won't work for you please do it on the command line as the webserver's user, e.g.
 
  su www-data - -c "searchd -c <path_to_your_htdocs>/website/var/plugins/SphinxSearch/sphinx.conf"
 

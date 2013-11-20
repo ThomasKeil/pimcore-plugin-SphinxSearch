@@ -68,6 +68,11 @@ sphinxsearch.settings = Class.create({
                         text: t("Run Indexer"),
                         handler: this.runIndexer.bind(this),
                         iconCls: "pimcore_icon_start"
+                    },
+                    {
+                        text: t("Start Searchd"),
+                        handler: this.startSearchd.bind(this),
+                        iconCls: "pimcore_icon_start"
                     }
 
                 ],
@@ -291,6 +296,28 @@ sphinxsearch.settings = Class.create({
                     }
                 } catch(e) {
                     pimcore.helpers.showNotification(t("error"), t("Error running the Sphinx Indexer"), "error");
+                }
+            }
+        });
+    },
+
+    startSearchd: function () {
+        Ext.Ajax.request({
+            url: "/plugin/SphinxSearch/admin/startsearchd",
+            method: "post",
+            params: {
+
+            },
+            success: function (response) {
+                try {
+                    var res = Ext.decode(response.responseText);
+                    if (res.success) {
+                        pimcore.helpers.showNotification(t("success"), t("Searchd started sucessfully"), "success");
+                    } else {
+                        pimcore.helpers.showNotification(t("error"), t("Searchd could not be started"), "error", t(res.message));
+                    }
+                } catch(e) {
+                    pimcore.helpers.showNotification(t("error"), t("Error starting Searchd"), "error");
                 }
             }
         });
