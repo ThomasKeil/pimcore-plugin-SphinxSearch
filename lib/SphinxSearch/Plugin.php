@@ -238,6 +238,22 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
   }
 
+  public static function isSearchdRunning() {
+    $config = SphinxSearch_Config::getInstance();
+    $plugin_config = $config->getConfig();
+    $pid_file = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$plugin_config->path->pid;
+
+    if (!file_exists($pid_file)) {
+      //die("PIDFILE ".$pid_file." nicht gefunden");
+      return false;
+    }
+
+    $pid = trim(file_get_contents($pid_file));
+
+    // TODO: What if on Windows?
+    return is_dir("/proc/".$pid);
+  }
+
   public static function runIndexer($index_name = null) {
     if (is_null($index_name)) {
       $index_name = "--all";
@@ -272,7 +288,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
           fwrite($fp, getmypid());
           fflush($fp);
 
-          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf ".$index_name." --rotate ", $output, $return_var);
+          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf ".$index_name.(self::isSearchdRunning() ? " --rotate " : ""), $output, $return_var);
 
           if ($return_var == 0) {
             $config->indexer->lastrun = time();

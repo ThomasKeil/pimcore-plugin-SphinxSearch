@@ -29,7 +29,8 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
       "searchd_port" => $config->searchd->port > 0 ? $config->searchd->port : 9312,
       "documents_i18n" => $config->documents->use_i18n == "true",
       "indexer_lastrun" => $lastrun->get(Zend_Date::DATETIME),
-      "indexer_onchange" => $config->indexer->onchange ? $config->indexer->onchange : "nothing"
+      "indexer_onchange" => $config->indexer->onchange ? $config->indexer->onchange : "nothing",
+      "searchd_running" => SphinxSearch_Plugin::isSearchdRunning()
     );
 		
 		$this->_helper->json($settings);

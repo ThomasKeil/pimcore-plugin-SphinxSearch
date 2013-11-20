@@ -47,7 +47,7 @@ sphinxsearch.settings = Class.create({
             }.bind(this));
 
             var indexer_lastrun_template = new Ext.XTemplate(t('indexer_lastrun'));
-            var indexer_lastrun_data = {lastrun: this.data.indexer_lastrun};
+            var indexer_lastrun_data = {lastrun: this.data.indexer_lastrun, searchdrunning: this.data.searchd_running ? "": t("not") + " "};
 
             this.layout = new Ext.FormPanel({
                 bodyStyle:'padding:20px 5px 20px 5px;',
