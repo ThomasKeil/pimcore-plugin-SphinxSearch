@@ -266,8 +266,8 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
     $pid = trim(file_get_contents($pid_file));
 
-    // TODO: What if on Windows?
-    return is_dir("/proc/".$pid);
+    exec("ps $pid", $output, $result);
+    return count($output) >= 2;
   }
 
   public static function runIndexer($index_name = null) {
