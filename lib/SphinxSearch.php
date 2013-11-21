@@ -67,7 +67,7 @@ class SphinxSearch {
       $offset = intval($params["offset"]);
     }
 
-    $SphinxClient->setLimits($offset, $max_results);
+    $SphinxClient->setLimits($offset, $max_results, $max_results);
 
     $class_config = $sphinx_config->getClassesAsArray(); // The configuration
     $field_weights = array();
