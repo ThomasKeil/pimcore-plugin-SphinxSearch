@@ -78,7 +78,13 @@ class SphinxSearch {
     }
     if (sizeof($field_weights) > 0) $SphinxClient->setFieldWeights($field_weights);
 
-    $index = "idx_".strtolower($class_name)."_".$language;
+    $index = "idx_".strtolower($class_name);
+    $object_class = Object_Class::getByName(strtolower(class_name));
+    if($object_class->getFieldDefinition("localizedfields")) {
+      $locale = Zend_Registry::get("Zend_Locale");
+      $language = $locale->getLanguage();
+      $index .= "_".$language;
+    }
 
     $search_result = $SphinxClient->Query($query, $index);
     if ($search_result === false ) {
