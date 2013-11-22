@@ -32,6 +32,7 @@ class SphinxSearch {
 
   private static function searchObjects($query, $class_name, $params = array()) {
     if (trim($query) == "") return array();
+    $class_name = strtolower($class_name);
 
     $sphinx_config = SphinxSearch_Config::getInstance();
     $config = $sphinx_config->getConfig();
@@ -71,15 +72,19 @@ class SphinxSearch {
 
     $class_config = $sphinx_config->getClassesAsArray(); // The configuration
     $field_weights = array();
-    foreach ($class_config[strtolower($class_name)] as $field_name => $field_config) {
+    foreach ($class_config[$class_name] as $field_name => $field_config) {
       if (array_key_exists("weight", $field_config)) {
         $field_weights[$field_name] = $field_config["weight"];
       }
     }
     if (sizeof($field_weights) > 0) $SphinxClient->setFieldWeights($field_weights);
 
-    $index = "idx_".strtolower($class_name);
-    $object_class = Object_Class::getByName(strtolower(class_name));
+
+    $index = "idx_".$class_name;
+    $object_class = Object_Class::getByName($class_name);
+    if (!$object_class) {
+      throw new SphinxSearch_Exception("Class \"".$class_name."\" not found.");
+    }
     if($object_class->getFieldDefinition("localizedfields")) {
       $locale = Zend_Registry::get("Zend_Locale");
       $language = $locale->getLanguage();
