@@ -65,7 +65,7 @@ sphinxsearch.settings = Class.create({
                         iconCls: "pimcore_icon_apply"
                     },
                     {
-                        text: t("Run Indexer"),
+                        text: t("Trigger Indexer"),
                         handler: this.runIndexer.bind(this),
                         iconCls: "pimcore_icon_start"
                     },
@@ -73,6 +73,11 @@ sphinxsearch.settings = Class.create({
                         text: t("Start Searchd"),
                         handler: this.startSearchd.bind(this),
                         iconCls: "pimcore_icon_start"
+                    },
+                    {
+                        text: t("Stop Searchd"),
+                        handler: this.stopSearchd.bind(this),
+                        iconCls: "pimcore_icon_stop"
                     }
 
                 ],
@@ -318,6 +323,28 @@ sphinxsearch.settings = Class.create({
                     }
                 } catch(e) {
                     pimcore.helpers.showNotification(t("error"), t("Error starting Searchd"), "error");
+                }
+            }
+        });
+    },
+
+    stopSearchd: function () {
+        Ext.Ajax.request({
+            url: "/plugin/SphinxSearch/admin/stopsearchd",
+            method: "post",
+            params: {
+
+            },
+            success: function (response) {
+                try {
+                    var res = Ext.decode(response.responseText);
+                    if (res.success) {
+                        pimcore.helpers.showNotification(t("success"), t("Searchd stopped sucessfully"), "success");
+                    } else {
+                        pimcore.helpers.showNotification(t("error"), t("Searchd could not be stopped"), "error", t(res.message));
+                    }
+                } catch(e) {
+                    pimcore.helpers.showNotification(t("error"), t("Error stopping Searchd"), "error");
                 }
             }
         });
