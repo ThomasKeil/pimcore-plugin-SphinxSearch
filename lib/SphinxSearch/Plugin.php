@@ -192,7 +192,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
    */
   public static function startSearchd($force = false) {
     if (!self::isSearchdRunning() || $force) {
-      exec("/usr/bin/searchd -c ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf", $output, $return_var);
+      exec("/usr/bin/searchd -c ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf 2&>1", $output, $return_var);
 
       if ($return_var == 0) {
         return array("result" => true, "message" => "Searchd started.");
@@ -326,7 +326,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
           fwrite($fp, getmypid());
           fflush($fp);
 
-          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf ".$index_name.(self::isSearchdRunning() ? " --rotate " : ""), $output, $return_var);
+          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf ".$index_name.(self::isSearchdRunning() ? " --rotate " : "")." 2&>1", $output, $return_var);
 
           if ($return_var == 0) {
             $config->indexer->lastrun = time();
