@@ -317,8 +317,8 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
           ftruncate($fp, 0);
           fwrite($fp, getmypid());
           fflush($fp);
-
-          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf ".$index_name.(self::isSearchdRunning() ? " --rotate " : "")." 2&>1", $output, $return_var);
+          $return_var = null;
+          exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf ".$index_name.(self::isSearchdRunning() ? " --rotate " : ""), $output, $return_var);
 
           if ($return_var == 0) {
             SphinxSearch_Config_Plugin::setValue("indexer", "lastrun", time());
@@ -326,7 +326,6 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
           flock($fp, LOCK_UN);    // release the lock
           logger::debug("SphinxSearch Indexer unlocked".$lockfile);
-          $return_var = 0;
         } else {
           $message = "SphinxSearch Indexer is not executed: locked with ".$lockfile;
           logger::err($message);
