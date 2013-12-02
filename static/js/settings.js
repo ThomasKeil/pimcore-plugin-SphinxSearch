@@ -98,6 +98,13 @@ sphinxsearch.settings = Class.create({
                         defaults: {width: 150},
                         items :[
                             {
+                                fieldLabel: t("Searchd path"),
+                                xtype: "textfield",
+                                name: "sphinxsearch.path_searchd",
+                                value: this.data.path_searchd,
+                                width: 350
+                            },
+                            {
                                 fieldLabel: t("searchd port"),
                                 xtype: "textfield",
                                 name: "sphinxsearch.searchd_port",

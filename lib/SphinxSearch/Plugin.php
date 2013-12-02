@@ -184,7 +184,12 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
    */
   public static function startSearchd($force = false) {
     if (!self::isSearchdRunning() || $force) {
-      exec("/usr/bin/searchd -c ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf", $output, $return_var);
+      $path = SphinxSearch_Config_Plugin::getValue("path", "searchd");
+      if (!is_executable($path)) {
+        return array("result" => false, "message" => "Can't execute ".$path);
+      }
+
+      exec($path." -c ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf", $output, $return_var);
 
       if ($return_var == 0) {
         return array("result" => true, "message" => "Searchd started.");

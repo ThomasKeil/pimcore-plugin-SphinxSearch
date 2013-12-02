@@ -25,6 +25,7 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
       "querylog" => $config_data["path"]["querylog"],
       "indexer" => $config_data["path"]["indexer"],
       "phpcli" => $config_data["path"]["phpcli"],
+      "path_searchd" => $config_data["path"]["searchd"],
       "indexer_maintenance" => $config_data["indexer"]["runwithmaintenance"],
       "indexer_period" => $config_data["indexer"]["period"],
       "searchd_port" => $config_data["searchd"]["port"] > 0 ? $config_data["searchd"]["port"] : 9312,
@@ -53,6 +54,7 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
       $config_data["path"]["log"] = $values["sphinxsearch.path_logfile"];
       $config_data["path"]["indexer"] = $values["sphinxsearch.path_indexer"];
       $config_data["path"]["phpcli"] = $values["sphinxsearch.path_phpcli"];
+      $config_data["path"]["searchd"] = $values["sphinxsearch.path_searchd"];
       $config_data["indexer"]["period"] = $values["sphinxsearch.indexer_period"];
       $config_data["indexer"]["runwithmaintenance"] = $values["sphinxsearch.indexer_maintenance"] == "true" ? "true" : "false";
       $config_data["indexer"]["onchange"] = $values["sphinxsearch.indexer_onchange"];
