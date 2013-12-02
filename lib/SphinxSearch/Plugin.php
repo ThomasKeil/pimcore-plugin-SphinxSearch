@@ -203,21 +203,23 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
    * @return mixed
    */
   public static function stopSearchd() {
-    if (self::isSearchdRunning()) {
+    try {
+      if (self::isSearchdRunning()) {
 
-      $config = SphinxSearch_Config::getInstance();
-      $plugin_config = $config->getConfig();
-      $pid_file = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$plugin_config->path->pid;
-      $pid = trim(file_get_contents($pid_file));
+        $pid_file = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.SphinxSearch_Config_Plugin::getValue("path", "pid");
+        $pid = trim(file_get_contents($pid_file));
 
-      exec("kill $pid", $output, $return_var);
+        exec("kill $pid", $output, $return_var);
 
-      if ($return_var == 0) {
-        return array("result" => true, "message" => "Searchd stopped.");
+        if ($return_var == 0) {
+          return array("result" => true, "message" => "Searchd stopped.");
+        }
+        return array("result" => false, "message" => $output);
       }
-      return array("result" => false, "message" => $output);
+      return array("result" => false, "message" => "Searchd doesn't seem to be running.");
+    } catch (Exception $e) {
+      return array("result" => false, "message" => $e->getMessage());
     }
-    return array("result" => false, "message" => "Searchd doesn't seem to be running.");
   }
 
 
