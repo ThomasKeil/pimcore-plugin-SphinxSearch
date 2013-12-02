@@ -24,7 +24,6 @@ class SphinxSearch_ClassController extends Pimcore_Controller_Action_Admin {
   public function init() {
     parent::init();
     $this->config = new SphinxSearch_Config();
-    $this->plugin_config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
   }
 
   public function getAction() {

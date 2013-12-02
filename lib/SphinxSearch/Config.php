@@ -15,11 +15,6 @@ class SphinxSearch_Config {
   private $classes;
 
   /**
-   * @var $config Zend_Config_Xml
-   */
-  private $config;
-
-  /**
    * Singleton instance
    *
    * @var Zend_Auth
@@ -43,7 +38,6 @@ class SphinxSearch_Config {
 
   public function __construct() {
     $this->classes = simplexml_load_file(SPHINX_VAR.DIRECTORY_SEPARATOR."classes.xml");
-    $this->config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
   }
 
 
@@ -53,10 +47,6 @@ class SphinxSearch_Config {
 
   public function getDocuments() {
     return $this->classes->documents;
-  }
-
-  public function getConfig() {
-    return $this->config;
   }
 
   public function getClassesAsArray() {
@@ -113,10 +103,10 @@ class SphinxSearch_Config {
     $index_path = SPHINX_VAR.DIRECTORY_SEPARATOR."index";
     $cli_path = PIMCORE_PLUGINS_PATH.DIRECTORY_SEPARATOR."SphinxSearch".DIRECTORY_SEPARATOR."cli";
 
-    $pid_path  = $this->config->path->pid;
-    $logfile_path = $this->config->path->log;
-    $querylog_path = $this->config->path->querylog;
-    $port = $this->config->searchd->port;
+    $pid_path  = SphinxSearch_Config_Plugin::getValue("path", "pid");
+    $logfile_path = SphinxSearch_Config_Plugin::getValue("path", "log");
+    $querylog_path = SphinxSearch_Config_Plugin::getValue("path", "querylog");
+    $port = SphinxSearch_Config_Plugin::getValue("searchd", "port");
 
     if (substr($pid_path,0,1) != DIRECTORY_SEPARATOR) $pid_path = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$pid_path;
     if (substr($logfile_path,0,1) != DIRECTORY_SEPARATOR) $logfile_path = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$logfile_path;
@@ -145,12 +135,12 @@ unlink_old = 1
 
 EOL;
 
-    $indexer = $this->config->path->phpcli." ".$cli_path.DIRECTORY_SEPARATOR."index_documents.php";
+    $indexer = SphinxSearch_Config_Plugin::getValue("path", "phpcli")." ".$cli_path.DIRECTORY_SEPARATOR."index_documents.php";
 
     $documents_config = $this->getDocumentsAsArray();
 
     $languages = array("all");
-    if ($this->config->documents->use_i18n == "true") {
+    if (SphinxSearch_Config_Plugin::getValue("documents", "use_i18n") == "true") {
       $languages = Pimcore_Tool::getValidLanguages();
     }
 

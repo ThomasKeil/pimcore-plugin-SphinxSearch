@@ -35,12 +35,11 @@ class SphinxSearch {
     $class_name = strtolower($class_name);
 
     $sphinx_config = SphinxSearch_Config::getInstance();
-    $config = $sphinx_config->getConfig();
 
     $SphinxClient = new SphinxClient();
 
     $SphinxClient->SetMatchMode(SPH_MATCH_EXTENDED2);
-    $SphinxClient->setServer("localhost", $config->searchd->port);
+    $SphinxClient->setServer("localhost", SphinxSearch_Config_Plugin::getValue("searchd", "port"));
 
     if (array_key_exists("language", $params)) {
       $language = $params["language"];
@@ -57,7 +56,7 @@ class SphinxSearch {
       $SphinxClient->SetSortMode(SPH_SORT_EXPR, $params["orderKey"]. " ".$order);
     }
 
-    $max_results = intval($config->maxresults);
+    $max_results = 1000; // TODO intval(SphinxSearch_Config_Plugin::getValue($config->maxresults);
     if (array_key_exists("max_results", $params)) {
       $max_results = intval($params["max_results"]);
       if ($max_results < 1) $max_results = 20; // Sphinx default actually
@@ -103,7 +102,6 @@ class SphinxSearch {
     if (trim($query) == "") return array();
 
     $sphinx_config = SphinxSearch_Config::getInstance();
-    $plugin_config = $sphinx_config->getConfig();
     $documents_config = $sphinx_config->getDocumentsAsArray();
 
     $SphinxClient = new SphinxClient();
@@ -111,7 +109,7 @@ class SphinxSearch {
     $entries = array();
 
     $language = "all";
-    if ($plugin_config->documents->use_i18n == "true") {
+    if (SphinxSearch_Config_Plugin::getValue("documents", "use_i18n") == "true") {
       if (array_key_exists("language", $params)) {
         $language = $params["language"];
       } else {

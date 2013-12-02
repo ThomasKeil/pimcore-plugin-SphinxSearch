@@ -83,17 +83,14 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
    */
   public function maintenance() {
     if (self::isInstalled()) {
-      $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
-
-      if ($config->indexer->runwithmaintenance != 1) {
+      if (SphinxSearch_Config_Plugin::getValue("indexer", "runwithmaintenance") != 1) {
         logger::debug("SphinxSearch Indexer is not configured to be run with maintenance.");
         return;
       }
       $now = time();
 
-      $last_run = $config->indexer->lastrun;
-
-      $period = $config->indexer->period;
+      $last_run = SphinxSearch_Config_Plugin::getValue("indexer", "lastrun");
+      $period = SphinxSearch_Config_Plugin::getValue("indexer", "period");
 
       if (($now - $period) < $last_run) {
         logger::debug("SphinxSearch Indexer ran at ".$last_run.", period is ".$period.", will be started in ".($now - $period + $last_run)." seconds");
@@ -159,12 +156,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
         break;
 
       case "reschedule":
-        $plugin_config->indexer->lastrun = 0;
-        $writer = new Zend_Config_Writer_Xml(array(
-          "config" => $plugin_config,
-          "filename" => SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml"
-        ));
-        $writer->write();
+        SphinxSearch_Config_Plugin::setValue("indexer", "lastrun", 0);
         break;
 
       default:
@@ -192,7 +184,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
    */
   public static function startSearchd($force = false) {
     if (!self::isSearchdRunning() || $force) {
-      exec("/usr/bin/searchd -c ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf 2&>1", $output, $return_var);
+      exec("/usr/bin/searchd -c ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf", $output, $return_var);
 
       if ($return_var == 0) {
         return array("result" => true, "message" => "Searchd started.");
@@ -228,8 +220,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
     if (!$document instanceof Document_Page) return;
 
     $config = SphinxSearch_Config::getInstance();
-    $plugin_config = $config->getConfig();
-    switch ($plugin_config->indexer->onchange) {
+    switch (SphinxSearch_Config_Plugin::getValue("indexer", "onchange")) {
       case "immediately":
         $documents_config = $config->getDocumentsAsArray();
 
@@ -260,12 +251,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
         break;
 
       case "reschedule":
-        $plugin_config->indexer->lastrun = 0;
-        $writer = new Zend_Config_Writer_Xml(array(
-          "config" => $plugin_config,
-          "filename" => SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml"
-        ));
-        $writer->write();
+        SphinxSearch_Config_Plugin::setValue("indexer", "lastrun", 0);
         break;
 
       default:
@@ -278,8 +264,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
   public static function isSearchdRunning() {
     $config = SphinxSearch_Config::getInstance();
-    $plugin_config = $config->getConfig();
-    $pid_file = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.$plugin_config->path->pid;
+    $pid_file = PIMCORE_DOCUMENT_ROOT.DIRECTORY_SEPARATOR.SphinxSearch_Config_Plugin::getValue("path", "pid");
 
     if (!file_exists($pid_file)) {
       //die("PIDFILE ".$pid_file." nicht gefunden");
@@ -297,12 +282,12 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
       $index_name = "--all";
     }
     $lockfile = SPHINX_VAR.DIRECTORY_SEPARATOR."lock.txt";
-    $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
     $output = array();
 
-    $indexer = "/usr/bin/indexer";
-    if (isset($config->path->indexer) && $config->path->indexer != "") {
-      $indexer = $config->path->indexer;
+    try {
+      $indexer = SphinxSearch_Config_Plugin::getValue("path", "indexer");
+    } catch (Exception $e) {
+      $indexer = "/usr/bin/indexer";
     }
 
     if (!(is_file($indexer) && is_executable($indexer))) {
@@ -329,12 +314,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
           exec("$indexer --config ".SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf ".$index_name.(self::isSearchdRunning() ? " --rotate " : "")." 2&>1", $output, $return_var);
 
           if ($return_var == 0) {
-            $config->indexer->lastrun = time();
-            $writer = new Zend_Config_Writer_Xml(array(
-              "config" => $config,
-              "filename" => SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml"
-            ));
-            $writer->write();
+            SphinxSearch_Config_Plugin::setValue("indexer", "lastrun", time());
           }
 
           flock($fp, LOCK_UN);    // release the lock

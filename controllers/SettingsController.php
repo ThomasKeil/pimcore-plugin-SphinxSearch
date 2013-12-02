@@ -14,22 +14,23 @@
 class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
 
 	public function settingsAction() {
-    $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
+    $config = SphinxSearch_Config_Plugin::getInstance();
+    $config_data = $config->getData();
 
-    $lastrun = new Zend_Date($config->indexer->lastrun);
+    $lastrun = new Zend_Date($config_data["indexer"]["lastrun"]);
 
     $settings = array(
-      "pid" => $config->path->pid,
-      "logfile" => $config->path->log,
-      "querylog" => $config->path->querylog,
-      "indexer" => $config->path->indexer,
-      "phpcli" => $config->path->phpcli,
-      "indexer_maintenance" => $config->indexer->runwithmaintenance,
-      "indexer_period" => $config->indexer->period,
-      "searchd_port" => $config->searchd->port > 0 ? $config->searchd->port : 9312,
-      "documents_i18n" => $config->documents->use_i18n == "true",
+      "pid" => $config_data["path"]["pid"],
+      "logfile" => $config_data["path"]["log"],
+      "querylog" => $config_data["path"]["querylog"],
+      "indexer" => $config_data["path"]["indexer"],
+      "phpcli" => $config_data["path"]["phpcli"],
+      "indexer_maintenance" => $config_data["indexer"]["runwithmaintenance"],
+      "indexer_period" => $config_data["indexer"]["period"],
+      "searchd_port" => $config_data["searchd"]["port"] > 0 ? $config_data["searchd"]["port"] : 9312,
+      "documents_i18n" => $config_data["documents"]["use_i18n"] == "true",
       "indexer_lastrun" => $lastrun->get(Zend_Date::DATETIME),
-      "indexer_onchange" => $config->indexer->onchange ? $config->indexer->onchange : "nothing",
+      "indexer_onchange" => $config_data["indexer"]["onchange"] ? $config_data["indexer"]["onchange"] : "nothing",
       "searchd_running" => SphinxSearch_Plugin::isSearchdRunning()
     );
 		
@@ -42,32 +43,29 @@ class SphinxSearch_SettingsController extends Pimcore_Controller_Action {
     // convert all special characters to their entities so the xml writer can put it into the file
     $values = array_htmlspecialchars($values);
     try {
-      $config = new Zend_Config_Xml(SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml", null, true); // Filname, section, allowModifications
-      $config->path->pid = $values["sphinxsearch.path_pid"];
-      $config->path->querylog = $values["sphinxsearch.path_querylog"];
-      $config->path->log = $values["sphinxsearch.path_logfile"];
-      $config->path->indexer = $values["sphinxsearch.path_indexer"];
-      $config->path->phpcli= $values["sphinxsearch.path_phpcli"];
-      $config->indexer->period = $values["sphinxsearch.indexer_period"];
-      $config->indexer->runwithmaintenance = $values["sphinxsearch.indexer_maintenance"] == "true" ? "true" : "false";
-      $config->indexer->onchange = $values["sphinxsearch.indexer_onchange"];
-      $config->documents->use_i18n = $values["sphinxsearch.documents_i18n"] == "true" ? "true" : "false";
-      $config->searchd->port = $values["sphinxsearch.searchd_port"];
-
-      $writer = new Zend_Config_Writer_Xml(array(
-        "config" => $config,
-        "filename" => SPHINX_VAR.DIRECTORY_SEPARATOR."config.xml"
-      ));
-      $writer->write();
-
       $sphinx_config = new SphinxSearch_Config();
       $sphinx_config->writeSphinxConfig();
+
+      $plugin_config = new SphinxSearch_Config_Plugin();
+      $config_data = $plugin_config->getData();
+      $config_data["path"]["pid"] = $values["sphinxsearch.path_pid"];
+      $config_data["path"]["querylog"] = $values["sphinxsearch.path_querylog"];
+      $config_data["path"]["log"] = $values["sphinxsearch.path_logfile"];
+      $config_data["path"]["indexer"] = $values["sphinxsearch.path_indexer"];
+      $config_data["path"]["phpcli"] = $values["sphinxsearch.path_phpcli"];
+      $config_data["indexer"]["period"] = $values["sphinxsearch.indexer_period"];
+      $config_data["indexer"]["runwithmaintenance"] = $values["sphinxsearch.indexer_maintenance"] == "true" ? "true" : "false";
+      $config_data["indexer"]["onchange"] = $values["sphinxsearch.indexer_onchange"];
+      $config_data["documents"]["use_i18n"] = $values["sphinxsearch.documents_i18n"] == "true" ? "true" : "false";
+      $config_data["searchd"]["port"] = $values["sphinxsearch.searchd_port"];
+      $plugin_config->setData($config_data);
+      $plugin_config->save();
+
+
 
       $this->_helper->json(array("success" => true));
     } catch (Exception $e) {
       $this->_helper->json(false);
     }
-
-
   }
 }
