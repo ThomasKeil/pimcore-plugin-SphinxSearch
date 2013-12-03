@@ -121,8 +121,7 @@ class SphinxSearch_Plugin extends Pimcore_API_Plugin_Abstract implements Pimcore
 
   public static function reindex_objects($object) {
     $config = SphinxSearch_Config::getInstance();
-    $plugin_config = $config->getConfig();
-    switch ($plugin_config->indexer->onchange) {
+    switch (SphinxSearch_Config_Plugin::getValue("indexer","onchange")) {
       case "immediately":
 
         $indexes = array();
