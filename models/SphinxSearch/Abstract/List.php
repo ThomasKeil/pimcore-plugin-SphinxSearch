@@ -48,12 +48,10 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
 
 
   public function __construct($query) {
-    $sphinx_config = SphinxSearch_Config::getInstance();
     $this->query = $query;
 
-    $this->plugin_config = $sphinx_config->getConfig();
+    $max_results = intval(SphinxSearch_Config_Plugin::getValue("results", "maxresults"));
 
-    $max_results = intval($this->plugin_config->maxresults);
     $this->limit = $max_results;
 
     $SphinxClient = new SphinxClient();
@@ -61,7 +59,7 @@ abstract class SphinxSearch_Abstract_List implements Zend_Paginator_Adapter_Inte
 
     $SphinxClient->SetMatchMode(SPH_MATCH_EXTENDED2);
     $SphinxClient->SetSortMode(SPH_SORT_EXTENDED, "@weight DESC");
-    $SphinxClient->setServer("localhost", $this->plugin_config->searchd->port);
+    $SphinxClient->setServer("localhost", SphinxSearch_Config_Plugin::getValue("searchd", "port"));
 
     // Sphinx Client is to always return everything - it's just IDs
     // Paginator is then to cast the necessary Items, this can be done
