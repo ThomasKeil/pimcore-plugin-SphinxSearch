@@ -40,7 +40,9 @@ class SphinxSearch_Config_Plugin {
     "documents" => array(
       "use_i18n" => false
     ),
-    "maxresults" => 1000
+    "results" => array(
+      "maxresults" => 1000
+    )
   );
 
   /**
