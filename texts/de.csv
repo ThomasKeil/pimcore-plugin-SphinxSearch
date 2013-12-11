@@ -43,3 +43,4 @@
 "Searchd could not be stoppped", "Searchd konnte nicht angehalten werden."
 "Error stopping Searchd", "Fehler beim Anhalten von Searchd."
 "Stop Searchd", "Searchd anhalten"
+"Searchd path", "Pfad zu searchd"

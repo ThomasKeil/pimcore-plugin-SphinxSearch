@@ -43,3 +43,4 @@
 "Searchd could not be stoppped", "Searchd could not be stoppped."
 "Error stopping Searchd", "Error stopping Searchd."
 "Stop Searchd", "Stop Searchd"
+"Searchd path", "Path to searchd"
