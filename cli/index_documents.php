@@ -70,6 +70,7 @@ print "    <sphinx:field name=\"o_published\"/>\n";
 print "    <sphinx:field name=\"title\"/>\n";
 print "    <sphinx:field name=\"description\"/>\n";
 print "    <sphinx:field name=\"keywords\"/>\n";
+print "    <sphinx:field name=\"site\"/>\n";
 foreach ($document_config["elements"] as $name => $element) {
   print "    <sphinx:field name=\"".$name."\"/>\n";
 }
@@ -82,12 +83,22 @@ foreach ($document_results as $document_result) {
      * @var Document_Page $document
      */
     $document = Document_Page::getById($document_result["id"]);
+
+
+    /**
+     * @var Site $site
+     */
+    $site = Pimcore_Tool_Frontend::getSiteForDocument($document);
+    $site_id = "";
+    if ($site) $site_id = $site->getId();
+
     if ($opts->language != "all" && $document->getProperty("language") != $opts->language ) continue;
     print "\n  <sphinx:document id=\"".$document->getId()."\">\n";
     print "<o_published>".($document->getPublished() ? "1" : "0")."</o_published>\n";
     print "<title><![CDATA[[".$document->getTitle()."]]></title>\n";
     print "<description><![CDATA[[".$document->getDescription()."]]></description>\n";
     print "<keywords><![CDATA[[".$document->getKeywords()."]]></keywords>\n";
+    print "<site>".$site_name."</site>\n";
     foreach ($document_config["elements"] as $element_name => $element_config) {
       $element = $document->getElement($element_name);
       if (is_null($element)) {
