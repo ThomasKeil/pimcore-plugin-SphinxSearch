@@ -28,7 +28,8 @@ $opts = new Zend_Console_Getopt(array(
 try {
   $opts->parse();
 } catch (Exception $e) {
-  die ("Fehler: ".$e->getMessage());
+  Logger::critical($e->getMessage());
+  die ("Error: ".$e->getMessage());
 }
 
 $sphinx_config = SphinxSearch_Config::getInstance();
@@ -36,6 +37,7 @@ $sphinx_config = SphinxSearch_Config::getInstance();
 $documents = $sphinx_config->getDocumentsAsArray();
 
 if (!array_key_exists($opts->document, $documents)) {
+  SphinxSearch_Logger::err("Unknown document: ".$opts->document."\n");
   print "Unknown document: ".$opts->document."\n";
   print "Possible documents are:\n";
   foreach ($documents as $document_name => $document_config) {
@@ -62,17 +64,17 @@ if (is_null($template) || $template == "") {
 
 $document_results = $db->fetchAll($query);
 
-print "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-print "<sphinx:docset>\n";
+$xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+$xml .= "<sphinx:docset>\n";
 
-print "  <sphinx:schema>\n";
-print "    <sphinx:field name=\"o_published\"/>\n";
-print "    <sphinx:field name=\"title\"/>\n";
-print "    <sphinx:field name=\"description\"/>\n";
-print "    <sphinx:field name=\"keywords\"/>\n";
-print "    <sphinx:field name=\"site\"/>\n";
+$xml .= "  <sphinx:schema>\n";
+$xml .= "    <sphinx:field name=\"o_published\"/>\n";
+$xml .= "    <sphinx:field name=\"title\"/>\n";
+$xml .= "    <sphinx:field name=\"description\"/>\n";
+$xml .= "    <sphinx:field name=\"keywords\"/>\n";
+$xml .= "    <sphinx:field name=\"site\"/>\n";
 foreach ($document_config["elements"] as $name => $element) {
-  print "    <sphinx:field name=\"".$name."\"/>\n";
+  $xml .= "    <sphinx:field name=\"".$name."\"/>\n";
 }
 
 print "  </sphinx:schema>\n";
@@ -84,6 +86,7 @@ foreach ($document_results as $document_result) {
      */
     $document = Document_Page::getById($document_result["id"]);
 
+    SphinxSearch_Logger::debug("indexing document ".$document->getFullPath());
 
     /**
      * @var Site $site
@@ -93,21 +96,21 @@ foreach ($document_results as $document_result) {
     if ($site) $site_id = $site->getId();
 
     if ($opts->language != "all" && $document->getProperty("language") != $opts->language ) continue;
-    print "\n  <sphinx:document id=\"".$document->getId()."\">\n";
-    print "<o_published>".($document->getPublished() ? "1" : "0")."</o_published>\n";
-    print "<title><![CDATA[[".$document->getTitle()."]]></title>\n";
-    print "<description><![CDATA[[".$document->getDescription()."]]></description>\n";
-    print "<keywords><![CDATA[[".$document->getKeywords()."]]></keywords>\n";
-    print "<site>".$site_name."</site>\n";
+    $xml .= "\n  <sphinx:document id=\"".$document->getId()."\">\n";
+    $xml .= "<o_published>".($document->getPublished() ? "1" : "0")."</o_published>\n";
+    $xml .= "<title><![CDATA[[".$document->getTitle()."]]></title>\n";
+    $xml .= "<description><![CDATA[[".$document->getDescription()."]]></description>\n";
+    $xml .= "<keywords><![CDATA[[".$document->getKeywords()."]]></keywords>\n";
+    $xml .= "<site>".$site_id."</site>\n";
     foreach ($document_config["elements"] as $element_name => $element_config) {
       $element = $document->getElement($element_name);
       if (is_null($element)) {
-        print "    <".$element_name."></".$element_name.">\n";
+        $xml .= "    <".$element_name."></".$element_name.">\n";
       } else {
         switch (get_class($element)) {
           case "Document_Tag_Textarea":
           case "Document_Tag_Wysiwyg":
-            print "    <".$element_name."><![CDATA[[".$element->text."]]></".$element_name.">\n";
+            $xml .= "    <".$element_name."><![CDATA[[".$element->text."]]></".$element_name.">\n";
             break;
           default:
             //var_dump($element);
@@ -116,10 +119,15 @@ foreach ($document_results as $document_result) {
       }
     }
   } catch (Exception $e) {
-
+    SphinxSearch_Logger::error("Error indexing document ".$document->getFullPath().": ".$e->getMessage());
   }
-  print "  </sphinx:document>\n";
+  $xml .= "  </sphinx:document>\n";
 }
 
+$xml .= "</sphinx:docset>\n";
 
-print "</sphinx:docset>\n";
+print $xml;
+
+// $debug_file_name = "/var/www/www.kontron-development.com/htdocs/website/var/tmp/sphinx/".uniqid();
+// PIMCORE_TEMPORARY_DIRECTORY."/sphinx/".Pimcore_File::getValidFilename($document->getFullPath()
+// file_put_contents($debug_file_name, $xml);
