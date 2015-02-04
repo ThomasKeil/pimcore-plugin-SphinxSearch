@@ -187,7 +187,7 @@ EOL;
           $attributes[$field->attributes()->name->__toString()] = $field->attributes()->field_type;
         }
       }
-      $fields = implode(",", $fields);
+      $fields = "`".implode("`,`", $fields)."`";
 
       $attributes_definition = "";
       foreach ($attributes as $key => $value) {
