@@ -77,7 +77,7 @@ foreach ($document_config["elements"] as $name => $element) {
   $xml .= "    <sphinx:field name=\"".$name."\"/>\n";
 }
 
-print "  </sphinx:schema>\n";
+$xml .= "  </sphinx:schema>\n";
 
 foreach ($document_results as $document_result) {
   try {

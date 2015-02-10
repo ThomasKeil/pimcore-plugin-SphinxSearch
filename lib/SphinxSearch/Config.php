@@ -265,8 +265,15 @@ index idx_$class_name
 
 EOL;
       }
-      file_put_contents(SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf", $config);
     }
+    if (is_dir(SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf.d")) {
+      foreach (glob(SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf.d/*.conf") as $filename) {
+        $config .= file_get_contents($filename);
+      }
+    }
+
+    file_put_contents(SPHINX_VAR.DIRECTORY_SEPARATOR."sphinx.conf", $config);
+
   }
 
 }
